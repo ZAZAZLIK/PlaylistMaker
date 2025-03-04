@@ -13,9 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="start|center_vertical"
-        android:paddingTop="@dimen/padding_ten"
-        android:paddingLeft="@dimen/padding_large">
+        android:gravity="start|center_vertical" >
 
         <ImageButton
             android:id="@+id/back_button"
@@ -58,6 +56,8 @@
             android:layout_height="wrap_content"
             android:minWidth="@dimen/forty_eight"
             android:minHeight="@dimen/fifty_six"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     </LinearLayout>
@@ -69,7 +69,8 @@
         android:drawableEnd="@drawable/baseline_share_24"
         android:padding="@dimen/padding_large"
         android:text="@string/share_the_app_name"
-        android:textSize="@dimen/text_size_normal" />
+        android:textSize="@dimen/text_size_normal"
+        android:textColor="@color/black"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/btn_support"
@@ -78,66 +79,22 @@
         android:drawableEnd="@drawable/baseline_support_agent_24"
         android:padding="@dimen/padding_large"
         android:text="@string/write_to_support_name"
-        android:textSize="@dimen/text_size_normal" />
+        android:textSize="@dimen/text_size_normal"
+        android:textColor="@color/black"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/btn_terms"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableEnd="@drawable/baseline_play_arrow_24"
+        android:drawableEnd="@drawable/baseline_arrow_forward_ios_24"
         android:padding="@dimen/padding_large"
         android:text="@string/user_agreement_name"
-        android:textSize="@dimen/text_size_normal" />
+        android:textSize="@dimen/text_size_normal"
+        android:textColor="@color/black"/>
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="@dimen/zero"
         android:layout_weight="1" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:baselineAligned="false">
-
-        <TextView
-            android:layout_width="@dimen/zero"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/baseline_search_24"
-            android:drawablePadding="@dimen/padding_small"
-            android:text="@string/search_name"
-            android:textSize="@dimen/text_size_normal"
-            android:gravity="center"
-            android:contentDescription="@string/search_name" />
-
-        <TextView
-            android:layout_width="@dimen/zero"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/baseline_audio_file_24"
-            android:drawablePadding="@dimen/padding_small"
-            android:text="@string/music_name"
-            android:textSize="@dimen/text_size_normal"
-            android:gravity="center"
-            android:contentDescription="@string/music_name" />
-
-        <TextView
-            android:layout_width="@dimen/zero"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/baseline_settings_24"
-            android:drawablePadding="@dimen/padding_small"
-            android:text="@string/settings_name"
-            android:textSize="@dimen/text_size_normal"
-            android:gravity="center"
-            android:contentDescription="@string/settings_name" />
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_marginBottom="@dimen/padding_large"
-        android:layout_height="@dimen/zero"/>
 
 </LinearLayout>
