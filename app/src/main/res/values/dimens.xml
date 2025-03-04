@@ -10,6 +10,7 @@
     <dimen name="text_size_twenty_two">22sp</dimen>
     <dimen name="twenty_four">24sp</dimen>
     <dimen name="text_size_twenty_six">26sp</dimen>
+    <dimen name="twenty_eight">28sp</dimen>
     <dimen name="thirty">30sp</dimen>
     <dimen name="forty_eight">48sp</dimen>
     <dimen name="fifty_six">56sp</dimen>
