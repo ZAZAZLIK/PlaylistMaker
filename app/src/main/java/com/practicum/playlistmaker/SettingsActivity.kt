@@ -2,16 +2,16 @@ package com.practicum.playlistmaker
 
 import android.os.Bundle
 import android.widget.ImageButton
-import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var backButton: ImageButton
     private lateinit var titleTextView: MaterialTextView
-    private lateinit var themeSwitch: Switch
+    private lateinit var themeSwitch: SwitchMaterial
     private lateinit var shareButton: MaterialTextView
     private lateinit var supportButton: MaterialTextView
     private lateinit var termsButton: MaterialTextView

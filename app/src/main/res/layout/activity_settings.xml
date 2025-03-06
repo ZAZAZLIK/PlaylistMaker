@@ -13,15 +13,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="start|center_vertical" >
+        android:gravity="start|center_vertical">
 
         <ImageButton
             android:id="@+id/back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/baseline_west_24"
+            android:src="@drawable/baseline_arrow_back_24"
             android:contentDescription="@string/back_name"
-            android:padding="@dimen/padding_large"
+            android:padding="@dimen/twelve"
             android:background="@android:color/transparent"/>
 
         <com.google.android.material.textview.MaterialTextView
@@ -29,7 +29,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/settings_name"
-            android:textSize="@dimen/text_size_twenty_two"/>
+            android:textSize="@dimen/text_size_twenty_two"
+            android:textColor="@color/black"
+            android:padding="@dimen/twelve" />
 
     </LinearLayout>
 
@@ -40,17 +42,19 @@
         android:gravity="center_vertical"
         android:paddingTop="@dimen/thirty"
         android:paddingStart="@dimen/padding_large"
-        android:paddingEnd="@dimen/padding_large" >
+        android:paddingEnd="@dimen/padding_large">
 
         <TextView
-            android:layout_width="@dimen/zero"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/dark_theme_name"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_normal"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:paddingTop="@dimen/twenty_one"
+            android:paddingBottom="@dimen/twenty_one"/>
 
-        <Switch
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switch_theme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -58,7 +62,7 @@
             android:minHeight="@dimen/fifty_six"
             app:thumbTint="@color/switch_thumb_color"
             app:trackTint="@color/switch_track_color"
-            tools:ignore="UseSwitchCompatOrMaterialXml" />
+            android:contentDescription="@string/switch_theme_description"/>
 
     </LinearLayout>
 
@@ -68,6 +72,8 @@
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/baseline_share_24"
         android:padding="@dimen/padding_large"
+        android:paddingTop="@dimen/twenty_one"
+        android:paddingBottom="@dimen/twenty_one"
         android:text="@string/share_the_app_name"
         android:textSize="@dimen/text_size_normal"
         android:textColor="@color/black"/>
@@ -80,7 +86,9 @@
         android:padding="@dimen/padding_large"
         android:text="@string/write_to_support_name"
         android:textSize="@dimen/text_size_normal"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:paddingTop="@dimen/twenty_one"
+        android:paddingBottom="@dimen/twenty_one"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/btn_terms"
@@ -90,11 +98,13 @@
         android:padding="@dimen/padding_large"
         android:text="@string/user_agreement_name"
         android:textSize="@dimen/text_size_normal"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:paddingTop="@dimen/twenty_one"
+        android:paddingBottom="@dimen/twenty_one"/>
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="@dimen/zero"
+        android:layout_height="0dp"
         android:layout_weight="1" />
 
 </LinearLayout>
