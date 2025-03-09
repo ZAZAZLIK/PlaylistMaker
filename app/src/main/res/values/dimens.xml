@@ -7,6 +7,7 @@
     <dimen name="fourteen">14sp</dimen>
     <dimen name="padding_large">16sp</dimen>
     <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="nineteen">19sp</dimen>
     <dimen name="padding_twenty">20sp</dimen>
     <dimen name="twenty_one">21sp</dimen>
     <dimen name="text_size_twenty_two">22sp</dimen>

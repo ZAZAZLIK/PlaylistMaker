@@ -1,9 +1,13 @@
 package com.practicum.playlistmaker
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 
@@ -12,13 +16,26 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var backButton: ImageButton
     private lateinit var titleTextView: MaterialTextView
     private lateinit var themeSwitch: SwitchMaterial
-    private lateinit var shareButton: MaterialTextView
-    private lateinit var supportButton: MaterialTextView
-    private lateinit var termsButton: MaterialTextView
+    private lateinit var shareButton: ImageView
+    private lateinit var supportButton: ImageView
+    private lateinit var termsButton: ImageView
+
+    private lateinit var shareText: String
+    private lateinit var supportEmail: String
+    private lateinit var emailSubject: String
+    private lateinit var emailBody: String
+    private lateinit var userAgreementUrl: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        shareText = getString(R.string.share_the_app_name_text)
+        supportEmail = getString(R.string.email)
+        emailSubject = getString(R.string.message)
+        emailBody = getString(R.string.thanks)
+
+        userAgreementUrl = getString(R.string.user_agreement_url)
 
         backButton = findViewById(R.id.back_button)
         titleTextView = findViewById(R.id.title_text_view)
@@ -32,23 +49,53 @@ class SettingsActivity : AppCompatActivity() {
         termsButton = findViewById(R.id.btn_terms)
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                Toast.makeText(this, "Темная тема включена", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Темная тема отключена", Toast.LENGTH_SHORT).show()
-            }
+            AppCompatDelegate.setDefaultNightMode(
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+            )
         }
 
         shareButton.setOnClickListener {
-            Toast.makeText(this, "Поделиться нажато", Toast.LENGTH_SHORT).show()
+            shareApp()
         }
 
         supportButton.setOnClickListener {
-            Toast.makeText(this, "Обратная связь нажата", Toast.LENGTH_SHORT).show()
+            writeToSupport()
         }
 
         termsButton.setOnClickListener {
-            Toast.makeText(this, "Пользовательское соглашение нажато", Toast.LENGTH_SHORT).show()
+            openUserAgreement()
         }
+    }
+
+    private fun shareApp() {
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            type = "text/plain"
+        }
+
+        val chooser = Intent.createChooser(shareIntent, null)
+        startActivity(chooser)
+    }
+
+    private fun writeToSupport() {
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:$supportEmail")
+            putExtra(Intent.EXTRA_SUBJECT, emailSubject)
+            putExtra(Intent.EXTRA_TEXT, emailBody)
+        }
+
+        val packageManager = packageManager
+        if (emailIntent.resolveActivity(packageManager) != null) {
+            startActivity(emailIntent)
+        } else {
+            Toast.makeText(this, "Нет приложений для отправки почты", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun openUserAgreement() {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(userAgreementUrl))
+        startActivity(browserIntent)
     }
 }
