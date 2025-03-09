@@ -9,4 +9,9 @@
     <string name="user_agreement_name">Пользовательское соглашение</string>
     <string name="back_name">Назад</string>
     <string name="switch_theme_description">Переключить тему</string>
+    <string name="email">zazazlikxxx@gmail.com</string>
+    <string name="user_agreement_url">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="thanks">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="message">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="share_the_app_name_text">Посмотрите этот замечательный курс по Андроид-разработке: https://practicum.yandex.ru/</string>
 </resources>

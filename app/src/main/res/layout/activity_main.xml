@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue"
+    android:background="@color/main_background_color"
     android:orientation="vertical"
     android:paddingLeft="@dimen/padding_large"
     android:paddingRight="@dimen/padding_large"
@@ -20,59 +19,26 @@
         android:textSize="@dimen/text_size_twenty_six"
         android:textStyle="bold"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_start"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/zero"
-        android:layout_weight="1"
-        android:layout_marginTop="@dimen/forty"
-        app:cornerRadius="@dimen/padding_large"
+        style="@style/CommonButtonStyle"
         android:text="@string/search_name"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_size_twenty_two"
-        android:textStyle="bold"
-        android:backgroundTint="@color/white"
-        android:foreground="?attr/selectableItemBackground"
         app:icon="@drawable/baseline_search_24"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/padding_medium"
-        app:iconTint="@color/black" />
+        app:cornerRadius="@dimen/padding_large" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_media"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/zero"
-        android:layout_weight="1"
-        android:layout_marginTop="@dimen/padding_large"
-        app:cornerRadius="@dimen/padding_large"
+        style="@style/CommonButtonStyle"
         android:text="@string/music_name"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_size_twenty_two"
-        android:textStyle="bold"
-        android:backgroundTint="@color/white"
-        android:foreground="?attr/selectableItemBackground"
         app:icon="@drawable/baseline_audio_file_24"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/padding_medium"
-        app:iconTint="@color/black" />
+        app:cornerRadius="@dimen/padding_large" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button_settings"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/zero"
-        android:layout_weight="1"
-        android:layout_marginTop="@dimen/padding_large"
-        android:layout_marginBottom="@dimen/twenty_eight"
-        app:cornerRadius="@dimen/padding_large"
+        style="@style/CommonButtonStyle"
         android:text="@string/settings_name"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_size_twenty_two"
-        android:textStyle="bold"
-        android:backgroundTint="@color/white"
-        android:foreground="?attr/selectableItemBackground"
         app:icon="@drawable/baseline_settings_24"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/padding_medium"
-        app:iconTint="@color/black" />
+        android:layout_marginBottom="@dimen/twenty_eight"
+        app:cornerRadius="@dimen/padding_large" />
 
 </LinearLayout>
