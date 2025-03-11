@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -83,14 +84,13 @@ class SettingsActivity : AppCompatActivity() {
         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:$supportEmail")
             putExtra(Intent.EXTRA_SUBJECT, emailSubject)
-            putExtra(Intent.EXTRA_TEXT, emailBody)
+            putExtra(Intent.EXTRA_TEXT, "$emailBody\n\nВаше имя или email здесь: ")
         }
 
-        val packageManager = packageManager
-        if (emailIntent.resolveActivity(packageManager) != null) {
+        try {
             startActivity(emailIntent)
-        } else {
-            Toast.makeText(this, "Нет приложений для отправки почты", Toast.LENGTH_SHORT).show()
+        } catch (ex: ActivityNotFoundException) {
+            Toast.makeText(this, "Нет почтового клиента для отправки письма", Toast.LENGTH_SHORT).show()
         }
     }
 
