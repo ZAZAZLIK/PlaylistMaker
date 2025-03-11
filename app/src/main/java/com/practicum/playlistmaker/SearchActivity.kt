@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
@@ -50,6 +51,9 @@ class SearchActivity : AppCompatActivity() {
         searchInput.text.clear()
         buttonClear.visibility = View.GONE
         searchInput.clearFocus()
+
+        val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(searchInput.windowToken, 0)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
