@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+<de.hdodenhof.circleimageview.CircleImageView
+android:id="@+id/artworkImageView"
+android:layout_width="48dp"
+android:layout_height="48dp"
+android:layout_marginEnd="16dp"
+android:contentDescription="@string/search_name"/>
+
+<LinearLayout
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:layout_weight="1"
+android:orientation="vertical">
+
+<TextView
+    android:id="@+id/trackNameTextView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="16sp"
+    android:textColor="@android:color/black"/>
+
+<TextView
+    android:id="@+id/artistNameTextView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="14sp"
+    android:textColor="@android:color/darker_gray"/>
+
+<TextView
+    android:id="@+id/trackTimeTextView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="12sp"
+    android:textColor="@android:color/darker_gray"/>
+</LinearLayout>
+
+<ImageView
+    android:id="@+id/btn_terms"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/baseline_arrow_forward_ios_24"
+    android:contentDescription="@string/search_name"
+    android:padding="@dimen/nineteen"
+    app:tint="@color/color_icon"
+    android:layout_gravity="center_vertical" />
+    </LinearLayout>
