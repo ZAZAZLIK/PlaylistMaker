@@ -24,7 +24,7 @@
             android:contentDescription="@string/back_name"
             android:padding="@dimen/twelve"
             android:background="@android:color/transparent"
-            app:tint="@color/color_icon"/>
+            app:tint="@color/color_text" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/title_text_view"

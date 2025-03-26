@@ -7,8 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import de.hdodenhof.circleimageview.CircleImageView
 
 class TrackAdapter(private val tracks: List<Track>, private val onTrackClick: (Track) -> Unit) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
 
@@ -16,7 +16,7 @@ class TrackAdapter(private val tracks: List<Track>, private val onTrackClick: (T
         private val trackNameTextView: TextView = itemView.findViewById(R.id.trackNameTextView)
         private val artistNameTextView: TextView = itemView.findViewById(R.id.artistNameTextView)
         private val trackTimeTextView: TextView = itemView.findViewById(R.id.trackTimeTextView)
-        private val artworkImageView: CircleImageView = itemView.findViewById(R.id.artworkImageView)
+        private val artworkImageView: ImageView = itemView.findViewById(R.id.artworkImageView)
         private val buttonTerms: ImageView = itemView.findViewById(R.id.btn_terms)
 
         fun bind(track: Track) {
@@ -26,7 +26,7 @@ class TrackAdapter(private val tracks: List<Track>, private val onTrackClick: (T
 
             Glide.with(itemView)
                 .load(track.artworkUrl100)
-                .apply(RequestOptions().placeholder(R.drawable.placeholder).centerCrop())
+                .apply(RequestOptions().transform(RoundedCorners(2)).placeholder(R.drawable.placeholder).centerCrop())
                 .into(artworkImageView)
 
             buttonTerms.setOnClickListener {
