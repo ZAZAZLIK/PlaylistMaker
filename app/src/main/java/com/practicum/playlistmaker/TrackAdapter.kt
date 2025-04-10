@@ -10,7 +10,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 
-class TrackAdapter(private val tracks: List<Track>, private val onTrackClick: (Track) -> Unit) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
+class TrackAdapter(
+    private var tracks: List<Track>,
+    private val onTrackClick: (Track) -> Unit
+) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
 
     inner class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val trackNameTextView: TextView = itemView.findViewById(R.id.trackNameTextView)
@@ -22,11 +25,13 @@ class TrackAdapter(private val tracks: List<Track>, private val onTrackClick: (T
         fun bind(track: Track) {
             trackNameTextView.text = track.trackName
             artistNameTextView.text = track.artistName
-            trackTimeTextView.text = track.trackTime
+            trackTimeTextView.text = track.getFormattedTrackTime()
 
             Glide.with(itemView)
                 .load(track.artworkUrl100)
-                .apply(RequestOptions().transform(RoundedCorners(2)).placeholder(R.drawable.placeholder).centerCrop())
+                .apply(RequestOptions().transform(RoundedCorners(10))
+                    .placeholder(R.drawable.placeholder)
+                    .centerCrop())
                 .into(artworkImageView)
 
             buttonTerms.setOnClickListener {
@@ -45,4 +50,9 @@ class TrackAdapter(private val tracks: List<Track>, private val onTrackClick: (T
     }
 
     override fun getItemCount(): Int = tracks.size
+
+    fun updateTracks(newTracks: List<Track>) {
+        tracks = newTracks
+        notifyDataSetChanged()
+    }
 }
