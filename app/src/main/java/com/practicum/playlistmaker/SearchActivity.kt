@@ -5,12 +5,46 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+data class SearchResponse(
+    val resultCount: Int,
+    val results: List<Track>
+)
+
+data class Track(
+    val trackName: String,  // Название композиции
+    val artistName: String, // Имя исполнителя
+    val trackTimeMillis: Long,  // Продолжительность трека в миллисекундах
+    val artworkUrl100: String // Ссылка на изображение обложки
+) {
+    fun getFormattedTrackTime(): String {
+        val minutes = trackTimeMillis / 1000 / 60
+        val seconds = (trackTimeMillis / 1000 % 60).toString().padStart(2, '0')
+        return "${minutes}:${seconds}"
+    }
+}
+
+interface ITunesApi {
+    @GET("/search?entity=song")
+    fun search(@Query("term") text: String): Call<SearchResponse>
+}
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchInput: EditText
@@ -19,17 +53,20 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackRecyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
 
-    private val tracks = listOf(
-        Track("Smells Like Teen Spirit", "Nirvana", "5:01", "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg"),
-        Track("Billie Jean", "Michael Jackson", "4:35", "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg"),
-        Track("Stayin' Alive", "Bee Gees", "4:10", "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg"),
-        Track("Whole Lotta Love", "Led Zeppelin", "5:33", "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg"),
-        Track("Sweet Child O'Mine", "Guns N' Roses", "5:03", "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg")
-    )
+    private lateinit var retrofit: Retrofit
+    private lateinit var iTunesApi: ITunesApi
+
+    private lateinit var noResultsLayout: View
+    private lateinit var serverErrorLayout: View
+    private lateinit var retryButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        noResultsLayout = findViewById(R.id.no_results_layout)
+        serverErrorLayout = findViewById(R.id.server_error_layout)
+        retryButton = findViewById(R.id.button_retry)
 
         val backButton: ImageButton = findViewById(R.id.button_back)
         searchInput = findViewById(R.id.search_input)
@@ -37,13 +74,19 @@ class SearchActivity : AppCompatActivity() {
         trackRecyclerView = findViewById(R.id.trackRecyclerView)
         trackRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        trackAdapter = TrackAdapter(tracks) { track ->
+        trackAdapter = TrackAdapter(emptyList()) { track ->
             openTrackDetails(track)
         }
         trackRecyclerView.adapter = trackAdapter
 
-        savedInstanceState?.let {
-            searchText = it.getString("SEARCH_TEXT", "")
+        retrofit = Retrofit.Builder()
+            .baseUrl("https://itunes.apple.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        iTunesApi = retrofit.create(ITunesApi::class.java)
+
+        if (savedInstanceState != null) {
+            searchText = savedInstanceState.getString("SEARCH_TEXT", "")
             searchInput.setText(searchText)
         }
 
@@ -65,6 +108,56 @@ class SearchActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        searchInput.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                performSearch(searchText)
+                true
+            } else false
+        }
+
+        retryButton.setOnClickListener {
+            performSearch(searchText)
+        }
+    }
+
+    private fun performSearch(query: String) {
+        if (query.isNotBlank()) {
+            noResultsLayout.visibility = View.GONE
+            serverErrorLayout.visibility = View.GONE
+            trackRecyclerView.visibility = View.VISIBLE
+
+            iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
+                override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                    if (response.isSuccessful && response.body() != null) {
+                        val searchResponse = response.body()!!
+                        if (searchResponse.resultCount > 0) {
+                            trackAdapter.updateTracks(
+                                searchResponse.results.map { track ->
+                                    Track(track.trackName, track.artistName, track.trackTimeMillis, track.artworkUrl100)
+                                }
+                            )
+                        } else {
+                            trackRecyclerView.visibility = View.GONE
+                            noResultsLayout.visibility = View.VISIBLE
+                        }
+                    } else {
+                        trackRecyclerView.visibility = View.GONE
+                        serverErrorLayout.visibility = View.VISIBLE
+                    }
+                }
+
+                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                    t.printStackTrace()
+                    trackRecyclerView.visibility = View.GONE
+                    serverErrorLayout.visibility = View.VISIBLE
+                }
+            })
+        }
+    }
+
+    private fun formatTrackTime(trackTimeMillis: Long): String {
+        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMillis)
     }
 
     private fun clearSearch() {
@@ -74,14 +167,17 @@ class SearchActivity : AppCompatActivity() {
 
         val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(searchInput.windowToken, 0)
+        trackRecyclerView.visibility = View.GONE
+        noResultsLayout.visibility = View.GONE
+        serverErrorLayout.visibility = View.GONE
+        trackAdapter.updateTracks(emptyList())
     }
 
     private fun openTrackDetails(track: Track) {
-
         val intent = Intent(this, TrackDetailsActivity::class.java).apply {
             putExtra("TRACK_NAME", track.trackName)
             putExtra("ARTIST_NAME", track.artistName)
-            putExtra("TRACK_TIME", track.trackTime)
+            putExtra("TRACK_TIME", track.trackTimeMillis)
             putExtra("ARTWORK_URL", track.artworkUrl100)
         }
         startActivity(intent)
