@@ -8,6 +8,9 @@
     <string name="write_to_support_name">Написать в поддержку</string>
     <string name="user_agreement_name">Пользовательское соглашение</string>
     <string name="back_name">Назад</string>
+    <string name="update">Обновить</string>
+    <string name="nothing_was_found">Ничего не нашлось</string>
+    <string name="communication_problems">Проблемы со связью \n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="switch_theme_description">Переключить тему</string>
     <string name="email">zazazlikxxx@gmail.com</string>
     <string name="user_agreement_url">https://yandex.ru/legal/practicum_offer/</string>

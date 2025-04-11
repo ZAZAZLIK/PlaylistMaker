@@ -74,14 +74,74 @@
         <ImageButton
             android:id="@+id/button_clear"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/forty_eight"
+            android:layout_height="@dimen/forty"
             android:src="@drawable/baseline_clear_24"
             android:contentDescription="@string/search_name"
             android:visibility="gone"
             android:layout_gravity="end|center_vertical"
             android:background="@drawable/search_input_background"
+            android:layout_marginEnd="@dimen/padding_ten"
             app:tint="@color/gray"/>
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/no_results_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mode" />
+
+        <TextView
+            android:text="@string/nothing_was_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_large"
+            android:textSize="@dimen/nineteen"
+            android:textColor="@color/textColorPrimary"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/server_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/mode_server" />
+
+        <TextView
+            android:text="@string/communication_problems"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="@dimen/twenty_four"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_large"
+            android:textSize="@dimen/nineteen"
+            android:textColor="@color/textColorPrimary"/>
+
+        <Button
+            android:id="@+id/button_retry"
+            android:text="@string/update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_large"
+            android:textSize="@dimen/fourteen"
+            android:textColor="@color/background_color"
+            android:onClick="onRetryButtonClick"
+            android:background="@drawable/button_background"/>
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/trackRecyclerView"

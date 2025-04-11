@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import android.util.TypedValue
+
+fun Context.dpToPx(dp: Int): Int {
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), resources.displayMetrics).toInt()
+}
 
 class TrackAdapter(
     private var tracks: List<Track>,
@@ -29,7 +35,7 @@ class TrackAdapter(
 
             Glide.with(itemView)
                 .load(track.artworkUrl100)
-                .apply(RequestOptions().transform(RoundedCorners(10))
+                .apply(RequestOptions().transform(RoundedCorners(itemView.context.dpToPx(10)))
                     .placeholder(R.drawable.placeholder)
                     .centerCrop())
                 .into(artworkImageView)

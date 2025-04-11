@@ -7,21 +7,44 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import java.text.SimpleDateFormat
 import java.util.Locale
+
+data class SearchResponse(
+    val resultCount: Int,
+    val results: List<Track>
+)
+
+data class Track(
+    val trackName: String,  // Название композиции
+    val artistName: String, // Имя исполнителя
+    val trackTimeMillis: Long,  // Продолжительность трека в миллисекундах
+    val artworkUrl100: String // Ссылка на изображение обложки
+) {
+    fun getFormattedTrackTime(): String {
+        val minutes = trackTimeMillis / 1000 / 60
+        val seconds = (trackTimeMillis / 1000 % 60).toString().padStart(2, '0')
+        return "${minutes}:${seconds}"
+    }
+}
+
+interface ITunesApi {
+    @GET("/search?entity=song")
+    fun search(@Query("term") text: String): Call<SearchResponse>
+}
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchInput: EditText
@@ -33,9 +56,17 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var retrofit: Retrofit
     private lateinit var iTunesApi: ITunesApi
 
+    private lateinit var noResultsLayout: View
+    private lateinit var serverErrorLayout: View
+    private lateinit var retryButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        noResultsLayout = findViewById(R.id.no_results_layout)
+        serverErrorLayout = findViewById(R.id.server_error_layout)
+        retryButton = findViewById(R.id.button_retry)
 
         val backButton: ImageButton = findViewById(R.id.button_back)
         searchInput = findViewById(R.id.search_input)
@@ -84,22 +115,44 @@ class SearchActivity : AppCompatActivity() {
                 true
             } else false
         }
+
+        retryButton.setOnClickListener {
+            performSearch(searchText)
+        }
     }
 
     private fun performSearch(query: String) {
         if (query.isNotBlank()) {
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val response = iTunesApi.search(query)
-                    withContext(Dispatchers.Main) {
-                        trackAdapter.updateTracks(response.results.map {
-                            Track(it.trackName, it.artistName, it.trackTimeMillis, it.artworkUrl100)
-                        })
+            noResultsLayout.visibility = View.GONE
+            serverErrorLayout.visibility = View.GONE
+            trackRecyclerView.visibility = View.VISIBLE
+
+            iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
+                override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                    if (response.isSuccessful && response.body() != null) {
+                        val searchResponse = response.body()!!
+                        if (searchResponse.resultCount > 0) {
+                            trackAdapter.updateTracks(
+                                searchResponse.results.map { track ->
+                                    Track(track.trackName, track.artistName, track.trackTimeMillis, track.artworkUrl100)
+                                }
+                            )
+                        } else {
+                            trackRecyclerView.visibility = View.GONE
+                            noResultsLayout.visibility = View.VISIBLE
+                        }
+                    } else {
+                        trackRecyclerView.visibility = View.GONE
+                        serverErrorLayout.visibility = View.VISIBLE
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
-            }
+
+                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                    t.printStackTrace()
+                    trackRecyclerView.visibility = View.GONE
+                    serverErrorLayout.visibility = View.VISIBLE
+                }
+            })
         }
     }
 
@@ -114,6 +167,10 @@ class SearchActivity : AppCompatActivity() {
 
         val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(searchInput.windowToken, 0)
+        trackRecyclerView.visibility = View.GONE
+        noResultsLayout.visibility = View.GONE
+        serverErrorLayout.visibility = View.GONE
+        trackAdapter.updateTracks(emptyList())
     }
 
     private fun openTrackDetails(track: Track) {
@@ -137,13 +194,3 @@ class SearchActivity : AppCompatActivity() {
         searchInput.setText(searchText)
     }
 }
-
-interface ITunesApi {
-    @GET("/search?entity=song")
-    suspend fun search(@Query("term") text: String): SearchResponse
-}
-
-data class SearchResponse(
-    val resultCount: Int,
-    val results: List<Track>
-)
