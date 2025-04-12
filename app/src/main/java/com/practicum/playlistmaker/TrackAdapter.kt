@@ -33,8 +33,14 @@ class TrackAdapter(
             artistNameTextView.text = track.artistName
             trackTimeTextView.text = track.getFormattedTrackTime()
 
+            val imageUrl = if (track.artworkUrl100.isNotBlank()) {
+                track.artworkUrl100
+            } else {
+                null
+            }
+
             Glide.with(itemView)
-                .load(track.artworkUrl100)
+                .load(imageUrl ?: R.drawable.placeholder)
                 .apply(RequestOptions().transform(RoundedCorners(itemView.context.dpToPx(10)))
                     .placeholder(R.drawable.placeholder)
                     .centerCrop())
