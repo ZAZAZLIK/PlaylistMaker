@@ -52,7 +52,7 @@
                 android:src="@drawable/baseline_search_24"
                 android:contentDescription="@string/search_name"
                 android:layout_gravity="center_vertical"
-                app:tint="@color/gray"/>
+                app:tint="@color/icon_tint_color"/>
 
             <EditText
                 android:id="@+id/search_input"
@@ -65,7 +65,8 @@
                 android:padding="@dimen/padding_ten"
                 android:background="@android:color/transparent"
                 android:layout_gravity="center_vertical"
-                android:textColor="@color/black"
+                android:textColorHint="@color/search_hint_color_dark"
+                android:textColor="@color/search_hint_color"
                 android:textCursorDrawable="@drawable/cursor_color"
                 android:imeOptions="actionDone"
                 android:singleLine="true"/>
@@ -81,7 +82,7 @@
             android:layout_gravity="end|center_vertical"
             android:background="@drawable/search_input_background"
             android:layout_marginEnd="@dimen/padding_ten"
-            app:tint="@color/gray"/>
+            app:tint="@color/clear_button_tint_color"/>
     </FrameLayout>
 
     <LinearLayout
@@ -138,8 +139,10 @@
             android:layout_marginTop="@dimen/padding_large"
             android:textSize="@dimen/fourteen"
             android:textColor="@color/background_color"
+            android:fontFamily="@font/ys_text_medium"
             android:onClick="onRetryButtonClick"
-            android:background="@drawable/button_background"/>
+            app:cornerRadius="@dimen/fifty_four"
+            android:backgroundTint="@color/the_color_of_the_refresh_button" />
 
     </LinearLayout>
 

@@ -140,10 +140,12 @@ class SearchActivity : AppCompatActivity() {
                         } else {
                             trackRecyclerView.visibility = View.GONE
                             noResultsLayout.visibility = View.VISIBLE
+                            retryButton.visibility = View.GONE
                         }
                     } else {
                         trackRecyclerView.visibility = View.GONE
                         serverErrorLayout.visibility = View.VISIBLE
+                        retryButton.visibility = View.VISIBLE
                     }
                 }
 
