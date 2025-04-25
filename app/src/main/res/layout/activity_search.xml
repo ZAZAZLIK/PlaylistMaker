@@ -52,7 +52,7 @@
                 android:src="@drawable/baseline_search_24"
                 android:contentDescription="@string/search_name"
                 android:layout_gravity="center_vertical"
-                app:tint="@color/gray"/>
+                app:tint="@color/icon_tint_color"/>
 
             <EditText
                 android:id="@+id/search_input"
@@ -65,7 +65,8 @@
                 android:padding="@dimen/padding_ten"
                 android:background="@android:color/transparent"
                 android:layout_gravity="center_vertical"
-                android:textColor="@color/black"
+                android:textColorHint="@color/search_hint_color_dark"
+                android:textColor="@color/search_hint_color"
                 android:textCursorDrawable="@drawable/cursor_color"
                 android:imeOptions="actionDone"
                 android:singleLine="true"/>
@@ -81,8 +82,51 @@
             android:layout_gravity="end|center_vertical"
             android:background="@drawable/search_input_background"
             android:layout_marginEnd="@dimen/padding_ten"
-            app:tint="@color/gray"/>
+            app:tint="@color/clear_button_tint_color"/>
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/history_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/padding_large">
+
+        <TextView
+            android:id="@+id/history_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/you_searched"
+            android:textSize="@dimen/nineteen"
+            android:textColor="@color/textColorPrimary"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="@dimen/twenty_four"
+            android:layout_marginTop="@dimen/padding_large"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/historyRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/button_clear_history"
+            android:text="@string/clear_history"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_large"
+            android:textSize="@dimen/fourteen"
+            android:textColor="@color/background_color"
+            android:fontFamily="@font/ys_text_medium"
+            android:onClick="onRetryButtonClick"
+            app:cornerRadius="@dimen/fifty_four"
+            android:backgroundTint="@color/the_color_of_the_refresh_button"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/no_results_layout"
@@ -138,8 +182,10 @@
             android:layout_marginTop="@dimen/padding_large"
             android:textSize="@dimen/fourteen"
             android:textColor="@color/background_color"
+            android:fontFamily="@font/ys_text_medium"
             android:onClick="onRetryButtonClick"
-            android:background="@drawable/button_background"/>
+            app:cornerRadius="@dimen/fifty_four"
+            android:backgroundTint="@color/the_color_of_the_refresh_button" />
 
     </LinearLayout>
 
