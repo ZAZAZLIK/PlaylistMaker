@@ -7,6 +7,8 @@
     <string name="share_the_app_name">Поделиться приложением</string>
     <string name="write_to_support_name">Написать в поддержку</string>
     <string name="user_agreement_name">Пользовательское соглашение</string>
+    <string name="you_searched">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
     <string name="back_name">Назад</string>
     <string name="update">Обновить</string>
     <string name="nothing_was_found">Ничего не нашлось</string>

@@ -22,6 +22,8 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import java.text.SimpleDateFormat
 import java.util.Locale
+import android.widget.LinearLayout
+import android.widget.TextView
 
 data class SearchResponse(
     val resultCount: Int,
@@ -39,6 +41,22 @@ data class Track(
         val seconds = (trackTimeMillis / 1000 % 60).toString().padStart(2, '0')
         return "${minutes}:${seconds}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Track &&
+                trackName == other.trackName &&
+                artistName == other.artistName &&
+                trackTimeMillis == other.trackTimeMillis &&
+                artworkUrl100 == other.artworkUrl100
+    }
+
+    override fun hashCode(): Int {
+        var result = trackName.hashCode()
+        result = 31 * result + artistName.hashCode()
+        result = 31 * result + trackTimeMillis.hashCode()
+        result = 31 * result + artworkUrl100.hashCode()
+        return result
+    }
 }
 
 interface ITunesApi {
@@ -52,6 +70,8 @@ class SearchActivity : AppCompatActivity() {
     private var searchText: String = ""
     private lateinit var trackRecyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
+    private lateinit var trackHistoryRecyclerView: RecyclerView
+    private lateinit var historyAdapter: TrackAdapter
 
     private lateinit var retrofit: Retrofit
     private lateinit var iTunesApi: ITunesApi
@@ -59,10 +79,17 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var noResultsLayout: View
     private lateinit var serverErrorLayout: View
     private lateinit var retryButton: Button
+    private lateinit var historyLayout: LinearLayout
+    private lateinit var historyTitle: TextView
+    private lateinit var clearHistoryButton: Button
+
+    private lateinit var searchHistory: SearchHistory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        searchHistory = SearchHistory(getSharedPreferences("app_preferences", MODE_PRIVATE))
 
         noResultsLayout = findViewById(R.id.no_results_layout)
         serverErrorLayout = findViewById(R.id.server_error_layout)
@@ -76,8 +103,29 @@ class SearchActivity : AppCompatActivity() {
 
         trackAdapter = TrackAdapter(emptyList()) { track ->
             openTrackDetails(track)
+            searchHistory.addTrack(track)
+            updateHistoryUI()
         }
         trackRecyclerView.adapter = trackAdapter
+
+        historyLayout = findViewById(R.id.history_layout)
+        historyTitle = findViewById(R.id.history_title)
+        clearHistoryButton = findViewById(R.id.button_clear_history)
+
+        historyAdapter = TrackAdapter(emptyList()) { track ->
+            openTrackDetails(track)
+            searchHistory.addTrack(track)
+            updateHistoryUI()
+        }
+        trackHistoryRecyclerView = findViewById(R.id.historyRecyclerView)
+        trackHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
+        trackHistoryRecyclerView.adapter = historyAdapter
+
+        clearHistoryButton.setOnClickListener {
+            clearHistory()
+        }
+
+        updateHistoryUI()
 
         retrofit = Retrofit.Builder()
             .baseUrl("https://itunes.apple.com")
@@ -121,42 +169,46 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun performSearch(query: String) {
-        if (query.isNotBlank()) {
-            noResultsLayout.visibility = View.GONE
-            serverErrorLayout.visibility = View.GONE
-            trackRecyclerView.visibility = View.VISIBLE
+        private fun performSearch(query: String) {
+            if (query.isNotBlank()) {
+                noResultsLayout.visibility = View.GONE
+                serverErrorLayout.visibility = View.GONE
+                trackRecyclerView.visibility = View.VISIBLE
+                historyLayout.visibility = View.GONE
 
-            iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
-                override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-                    if (response.isSuccessful && response.body() != null) {
-                        val searchResponse = response.body()!!
-                        if (searchResponse.resultCount > 0) {
-                            trackAdapter.updateTracks(
-                                searchResponse.results.map { track ->
-                                    Track(track.trackName, track.artistName, track.trackTimeMillis, track.artworkUrl100)
-                                }
-                            )
+                iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
+                    override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                        if (response.isSuccessful && response.body() != null) {
+                            val searchResponse = response.body()!!
+                            if (searchResponse.resultCount > 0) {
+                                trackAdapter.updateTracks(
+                                    searchResponse.results.map { track ->
+                                        Track(track.trackName, track.artistName, track.trackTimeMillis, track.artworkUrl100)
+                                    }
+                                )
+                            } else {
+                                trackRecyclerView.visibility = View.GONE
+                                noResultsLayout.visibility = View.VISIBLE
+                                retryButton.visibility = View.GONE
+                            }
                         } else {
                             trackRecyclerView.visibility = View.GONE
-                            noResultsLayout.visibility = View.VISIBLE
-                            retryButton.visibility = View.GONE
+                            serverErrorLayout.visibility = View.VISIBLE
+                            retryButton.visibility = View.VISIBLE
                         }
-                    } else {
+                    }
+
+                    override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                        t.printStackTrace()
                         trackRecyclerView.visibility = View.GONE
                         serverErrorLayout.visibility = View.VISIBLE
-                        retryButton.visibility = View.VISIBLE
                     }
-                }
+                })
+            } else {
 
-                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                    t.printStackTrace()
-                    trackRecyclerView.visibility = View.GONE
-                    serverErrorLayout.visibility = View.VISIBLE
-                }
-            })
+                historyLayout.visibility = View.GONE
+            }
         }
-    }
 
     private fun formatTrackTime(trackTimeMillis: Long): String {
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackTimeMillis)
@@ -195,4 +247,24 @@ class SearchActivity : AppCompatActivity() {
         searchText = savedInstanceState.getString("SEARCH_TEXT", "")
         searchInput.setText(searchText)
     }
+
+    private fun updateHistoryUI() {
+        val history = searchHistory.getHistory()
+        if (history.isNotEmpty()) {
+            historyTitle.visibility = View.VISIBLE
+            clearHistoryButton.visibility = View.VISIBLE
+            trackHistoryRecyclerView.visibility = View.VISIBLE
+            historyAdapter.updateTracks(history)
+        } else {
+            historyTitle.visibility = View.GONE
+            clearHistoryButton.visibility = View.GONE
+            trackHistoryRecyclerView.visibility = View.GONE
+        }
+    }
+
+    private fun clearHistory() {
+        searchHistory.clearHistory()
+        updateHistoryUI()
+    }
+
 }
