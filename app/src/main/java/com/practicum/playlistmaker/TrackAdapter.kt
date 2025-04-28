@@ -26,7 +26,16 @@ class TrackAdapter(
         private val artistNameTextView: TextView = itemView.findViewById(R.id.artistNameTextView)
         private val trackTimeTextView: TextView = itemView.findViewById(R.id.trackTimeTextView)
         private val artworkImageView: ImageView = itemView.findViewById(R.id.artworkImageView)
-        private val buttonTerms: ImageView = itemView.findViewById(R.id.btn_terms)
+
+        init {
+
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onTrackClick(tracks[position])
+                }
+            }
+        }
 
         fun bind(track: Track) {
             trackNameTextView.text = track.trackName
@@ -45,10 +54,6 @@ class TrackAdapter(
                     .placeholder(R.drawable.placeholder)
                     .centerCrop())
                 .into(artworkImageView)
-
-            buttonTerms.setOnClickListener {
-                onTrackClick(track)
-            }
         }
     }
 
