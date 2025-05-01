@@ -7,15 +7,11 @@ class PreferencesHelper(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
 
-    companion object {
-        const val THEME_KEY = "theme_key"
-    }
-
     fun saveTheme(isDarkTheme: Boolean) {
-        sharedPreferences.edit().putBoolean(THEME_KEY, isDarkTheme).apply()
+        sharedPreferences.edit().putBoolean("is_dark_theme", isDarkTheme).apply()
     }
 
     fun isDarkTheme(): Boolean {
-        return sharedPreferences.getBoolean(THEME_KEY, false)
+        return sharedPreferences.getBoolean("is_dark_theme", false)
     }
 }

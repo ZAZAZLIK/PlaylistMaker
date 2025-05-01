@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -20,12 +21,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Response
 import retrofit2.Call
-import android.util.Log
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchInput: EditText
     private lateinit var buttonClear: ImageButton
     private var searchText: String = ""
+    private var lastSearchQuery: String? = null
     private lateinit var trackRecyclerView: RecyclerView
     private lateinit var trackAdapter: TrackAdapter
     private lateinit var trackHistoryRecyclerView: RecyclerView
@@ -39,6 +43,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var historyTitle: TextView
     private lateinit var clearHistoryButton: Button
     private lateinit var searchHistory: SearchHistory
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+    private var isFromSearchQuery: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +53,17 @@ class SearchActivity : AppCompatActivity() {
         searchHistory = SearchHistory(getSharedPreferences("app_preferences", MODE_PRIVATE))
         initializeViews()
         setupRetrofit()
+
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val isFromSearchQuery = result.data?.getBooleanExtra("isFromSearchQuery", false) ?: false
+                if (isFromSearchQuery) {
+                    updateSearchResults(lastSearchQuery ?: "")
+                } else {
+                    updateHistoryUI()
+                }
+            }
+        }
 
         if (savedInstanceState != null) {
             searchText = savedInstanceState.getString("SEARCH_TEXT", "")
@@ -67,10 +84,8 @@ class SearchActivity : AppCompatActivity() {
                     trackRecyclerView.visibility = View.GONE
                     noResultsLayout.visibility = View.GONE
                     serverErrorLayout.visibility = View.GONE
-
                     clearHistoryButton.visibility = if (searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
                 } else {
-
                     historyLayout.visibility = View.GONE
                     clearHistoryButton.visibility = View.GONE
                     performSearch(searchText)
@@ -96,6 +111,15 @@ class SearchActivity : AppCompatActivity() {
         }
 
         updateHistoryUI()
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val intent = Intent()
+                intent.putExtra("isFromSearchQuery", isFromSearchQuery)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }
+        })
     }
 
     private fun initializeViews() {
@@ -105,9 +129,10 @@ class SearchActivity : AppCompatActivity() {
         val backButton: ImageButton = findViewById(R.id.button_back)
         searchInput = findViewById(R.id.search_input)
         buttonClear = findViewById(R.id.button_clear)
+
         trackRecyclerView = findViewById(R.id.trackRecyclerView)
         trackRecyclerView.layoutManager = LinearLayoutManager(this)
-        trackAdapter = TrackAdapter(emptyList()) { track ->
+        trackAdapter = TrackAdapter(mutableListOf()) { track ->
             openTrackDetails(track)
             searchHistory.addTrack(track)
             updateHistoryUI()
@@ -117,13 +142,14 @@ class SearchActivity : AppCompatActivity() {
         historyLayout = findViewById(R.id.history_layout)
         historyTitle = findViewById(R.id.history_title)
         clearHistoryButton = findViewById(R.id.button_clear_history)
-        historyAdapter = TrackAdapter(emptyList()) { track ->
+
+        trackHistoryRecyclerView = findViewById(R.id.historyRecyclerView)
+        trackHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
+        historyAdapter = TrackAdapter(mutableListOf()) { track ->
             openTrackDetails(track)
             searchHistory.addTrack(track)
             updateHistoryUI()
         }
-        trackHistoryRecyclerView = findViewById(R.id.historyRecyclerView)
-        trackHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
         trackHistoryRecyclerView.adapter = historyAdapter
 
         backButton.setOnClickListener { finish() }
@@ -138,12 +164,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun performSearch(query: String) {
-        Log.d("SearchActivity", "Query: $query")
-
+        lastSearchQuery = query
         if (query.isNotBlank()) {
-            noResultsLayout.visibility = View.GONE
-            serverErrorLayout.visibility = View.GONE
-            trackRecyclerView.visibility = View.VISIBLE
+            setViewVisibility(noResultsLayout, false)
+            setViewVisibility(serverErrorLayout, false)
+            setViewVisibility(trackRecyclerView, true)
             historyLayout.visibility = View.GONE
 
             iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
@@ -156,33 +181,34 @@ class SearchActivity : AppCompatActivity() {
                             }
                             trackAdapter.updateTracks(tracks)
 
-                            historyLayout.visibility = View.GONE
+                            setViewVisibility(trackRecyclerView, true)
+                            setViewVisibility(noResultsLayout, false)
                         } else {
-
-                            trackRecyclerView.visibility = View.GONE
-                            noResultsLayout.visibility = View.VISIBLE
+                            setViewVisibility(trackRecyclerView, false)
+                            setViewVisibility(noResultsLayout, true)
                         }
                     } else {
-
-                        trackRecyclerView.visibility = View.GONE
-                        serverErrorLayout.visibility = View.VISIBLE
+                        setViewVisibility(trackRecyclerView, false)
+                        setViewVisibility(serverErrorLayout, true)
                     }
                 }
 
                 override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-
-                    trackRecyclerView.visibility = View.GONE
-                    serverErrorLayout.visibility = View.VISIBLE
+                    setViewVisibility(trackRecyclerView, false)
+                    setViewVisibility(serverErrorLayout, true)
                 }
             })
         } else {
-
             updateHistoryUI()
-
-            trackRecyclerView.visibility = View.GONE
-            noResultsLayout.visibility = View.GONE
-            serverErrorLayout.visibility = View.GONE
+            setViewVisibility(trackRecyclerView, false)
+            setViewVisibility(noResultsLayout, false)
+            setViewVisibility(serverErrorLayout, false)
         }
+    }
+
+    private fun updateClearHistoryButton() {
+        val history = searchHistory.getHistory()
+        clearHistoryButton.visibility = if (history.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun clearSearch() {
@@ -192,9 +218,9 @@ class SearchActivity : AppCompatActivity() {
         val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(searchInput.windowToken, 0)
 
-        trackRecyclerView.visibility = View.GONE
-        noResultsLayout.visibility = View.GONE
-        serverErrorLayout.visibility = View.GONE
+        setViewVisibility(trackRecyclerView, false)
+        setViewVisibility(noResultsLayout, false)
+        setViewVisibility(serverErrorLayout, false)
         trackAdapter.updateTracks(emptyList())
 
         updateHistoryUI()
@@ -202,13 +228,14 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun openTrackDetails(track: Track) {
+        isFromSearchQuery = true
         val intent = Intent(this, TrackDetailsActivity::class.java).apply {
             putExtra("TRACK_NAME", track.trackName)
             putExtra("ARTIST_NAME", track.artistName)
             putExtra("TRACK_TIME", track.trackTimeMillis)
             putExtra("ARTWORK_URL", track.artworkUrl100)
         }
-        startActivity(intent)
+        activityResultLauncher.launch(intent)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -224,24 +251,39 @@ class SearchActivity : AppCompatActivity() {
 
     private fun updateHistoryUI() {
         val history = searchHistory.getHistory()
-        Log.d("SearchActivity", "History count: ${history.size}")
 
         if (history.isNotEmpty()) {
-            historyTitle.visibility = View.VISIBLE
-            clearHistoryButton.visibility = View.VISIBLE
-            trackHistoryRecyclerView.visibility = View.VISIBLE
+            setViewVisibility(historyTitle, true)
+            setViewVisibility(clearHistoryButton, true)
+            setViewVisibility(trackHistoryRecyclerView, true)
             historyAdapter.updateTracks(history)
-            historyLayout.visibility = View.VISIBLE
+            setViewVisibility(historyLayout, true)
         } else {
-            historyTitle.visibility = View.GONE
-            clearHistoryButton.visibility = View.GONE
-            trackHistoryRecyclerView.visibility = View.GONE
-            historyLayout.visibility = View.GONE
+            setViewVisibility(historyTitle, false)
+            setViewVisibility(clearHistoryButton, false)
+            setViewVisibility(trackHistoryRecyclerView, false)
+            setViewVisibility(historyLayout, false)
         }
     }
 
     private fun clearHistory() {
         searchHistory.clearHistory()
         updateHistoryUI()
+    }
+
+    private fun updateSearchResults(query: String) {
+        if (query.isNotEmpty()) {
+            performSearch(query)
+        } else {
+            clearSearchResults()
+        }
+        updateClearHistoryButton()
+    }
+
+    private fun clearSearchResults() {
+    }
+
+    private fun setViewVisibility(view: View, isVisible: Boolean) {
+        view.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 }
