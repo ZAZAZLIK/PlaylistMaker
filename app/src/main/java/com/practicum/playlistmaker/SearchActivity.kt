@@ -58,7 +58,7 @@ class SearchActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val isFromSearchQuery = result.data?.getBooleanExtra("isFromSearchQuery", false) ?: false
                 if (isFromSearchQuery) {
-                    updateSearchResults(lastSearchQuery ?: "")
+                //    updateSearchResults(lastSearchQuery ?: "")
                 } else {
                     updateHistoryUI()
                 }
@@ -135,7 +135,7 @@ class SearchActivity : AppCompatActivity() {
         trackAdapter = TrackAdapter(mutableListOf()) { track ->
             openTrackDetails(track)
             searchHistory.addTrack(track)
-            updateHistoryUI()
+        //    updateHistoryUI()
         }
         trackRecyclerView.adapter = trackAdapter
 
