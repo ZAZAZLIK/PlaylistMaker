@@ -30,20 +30,14 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        preferencesHelper = PreferencesHelper(this)
-        if (preferencesHelper.isDarkTheme()) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
-
         setContentView(R.layout.activity_settings)
+
+        preferencesHelper = PreferencesHelper(this)
 
         shareText = getString(R.string.share_the_app_name_text)
         supportEmail = getString(R.string.email)
         emailSubject = getString(R.string.message)
         emailBody = getString(R.string.thanks)
-
         userAgreementUrl = getString(R.string.user_agreement_url)
 
         backButton = findViewById(R.id.back_button)

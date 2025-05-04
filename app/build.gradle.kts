@@ -64,4 +64,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:<latest_version>")
     implementation ("com.squareup.retrofit2:converter-gson:<latest_version>")
     implementation ("androidx.activity:activity-ktx:1.6.1")
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+
 }

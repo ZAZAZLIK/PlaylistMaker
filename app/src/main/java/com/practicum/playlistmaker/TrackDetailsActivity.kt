@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -19,28 +19,41 @@ class TrackDetailsActivity : AppCompatActivity() {
 
         isFromSearchQuery = intent.getBooleanExtra("isFromSearchQuery", false)
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val intent = Intent()
-                intent.putExtra("isFromSearchQuery", true)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
-            }
-        })
+        val backButton: ImageButton = findViewById(R.id.button_back)
+
+        backButton.setOnClickListener {
+            val intent = Intent()
+            intent.putExtra("isFromSearchQuery", true)
+            setResult(Activity.RESULT_OK, intent)
+            finish()
+        }
 
         val trackName = intent.getStringExtra("TRACK_NAME")
         val artistName = intent.getStringExtra("ARTIST_NAME")
         val trackTime = intent.getLongExtra("TRACK_TIME", 0L)
         val artworkUrl = intent.getStringExtra("ARTWORK_URL")
+        val album = intent.getStringExtra("ALBUM")
+        val year = intent.getStringExtra("YEAR")
+        val genre = intent.getStringExtra("GENRE")
+        val country = intent.getStringExtra("COUNTRY")
 
         val trackNameTextView: TextView = findViewById(R.id.trackNameTextView)
         val artistNameTextView: TextView = findViewById(R.id.artistNameTextView)
-        val trackTimeTextView: TextView = findViewById(R.id.trackTimeTextView)
+        val trackTimeTextView: TextView = findViewById(R.id.trackTimeValue)
         val artworkImageView: ImageView = findViewById(R.id.artworkImageView)
+        val albumTextView: TextView = findViewById(R.id.albumValue) // Альбом
+        val yearTextView: TextView = findViewById(R.id.yearValue) // Год
+        val genreTextView: TextView = findViewById(R.id.genreValue) // Жанр
+        val countryTextView: TextView = findViewById(R.id.countryValue) // Страна
 
         trackNameTextView.text = trackName
         artistNameTextView.text = artistName
         trackTimeTextView.text = formatTrackTime(trackTime)
+        albumTextView.text = album
+        yearTextView.text = year
+        genreTextView.text = genre
+        countryTextView.text = country
+
         Glide.with(this)
             .load(artworkUrl)
             .apply(RequestOptions().placeholder(R.drawable.placeholder).centerCrop())

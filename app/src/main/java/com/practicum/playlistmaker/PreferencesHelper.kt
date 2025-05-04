@@ -3,7 +3,8 @@ package com.practicum.playlistmaker
 import android.content.Context
 import android.content.SharedPreferences
 
-class PreferencesHelper(context: Context) {
+class PreferencesHelper(private val context: Context) {
+
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
 
