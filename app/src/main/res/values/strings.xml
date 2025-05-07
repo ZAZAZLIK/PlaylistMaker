@@ -28,5 +28,6 @@
     <string name="country">Страна</string>
     <string name="save_track">Сохранить трек</string>
     <string name="play">Проигрыватель</string>
+    <string name="time_to_lose">Контроля воспроизведения</string>
     <string name="like_track">Отметить понравившейся</string>
 </resources>

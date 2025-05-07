@@ -28,31 +28,52 @@ class TrackDetailsActivity : AppCompatActivity() {
             finish()
         }
 
+        val saveTrackImageView: ImageView = findViewById(R.id.saveTrackImageView)
+
+        saveTrackImageView.setOnClickListener {
+            saveTrack()
+        }
+
+        val playButton: ImageView = findViewById(R.id.playButton)
+
+        playButton.setOnClickListener {
+            playTrack()
+        }
+
+        val likeTrackImageView: ImageView = findViewById(R.id.likeTrackImageView)
+
+        likeTrackImageView.setOnClickListener {
+            likeTrack()
+        }
+
         val trackName = intent.getStringExtra("TRACK_NAME")
         val artistName = intent.getStringExtra("ARTIST_NAME")
         val trackTime = intent.getLongExtra("TRACK_TIME", 0L)
-        val artworkUrl = intent.getStringExtra("ARTWORK_URL")
-        val album = intent.getStringExtra("ALBUM")
-        val year = intent.getStringExtra("YEAR")
-        val genre = intent.getStringExtra("GENRE")
+        var artworkUrl = intent.getStringExtra("ARTWORK_URL")
+        val collectionName = intent.getStringExtra("COLLECTION_NAME")
+        val releaseDate = intent.getStringExtra("RELEASE_DATE")
+        val primaryGenreName = intent.getStringExtra("PRIMARY_GENRE_NAME")
         val country = intent.getStringExtra("COUNTRY")
+
+        artworkUrl = artworkUrl?.replace("100x100bb.jpg", "512x512bb.jpg")
 
         val trackNameTextView: TextView = findViewById(R.id.trackNameTextView)
         val artistNameTextView: TextView = findViewById(R.id.artistNameTextView)
         val trackTimeTextView: TextView = findViewById(R.id.trackTimeValue)
         val artworkImageView: ImageView = findViewById(R.id.artworkImageView)
-        val albumTextView: TextView = findViewById(R.id.albumValue) // Альбом
-        val yearTextView: TextView = findViewById(R.id.yearValue) // Год
-        val genreTextView: TextView = findViewById(R.id.genreValue) // Жанр
+        val collectionNameTextView: TextView = findViewById(R.id.albumValue) // Альбом
+        val releaseDateTextView: TextView = findViewById(R.id.yearValue) // Год
+        val primaryGenreNameTextView: TextView = findViewById(R.id.genreValue) // Жанр
         val countryTextView: TextView = findViewById(R.id.countryValue) // Страна
 
         trackNameTextView.text = trackName
         artistNameTextView.text = artistName
         trackTimeTextView.text = formatTrackTime(trackTime)
-        albumTextView.text = album
-        yearTextView.text = year
-        genreTextView.text = genre
+        collectionNameTextView.text = collectionName
+        releaseDateTextView.text = releaseDate
+        primaryGenreNameTextView.text = primaryGenreName
         countryTextView.text = country
+
 
         Glide.with(this)
             .load(artworkUrl)
@@ -65,4 +86,17 @@ class TrackDetailsActivity : AppCompatActivity() {
         val seconds = (trackTimeMillis / 1000 % 60).toString().padStart(2, '0')
         return "$minutes:$seconds"
     }
+
+    private fun saveTrack() {
+        // Реализуйте логику для сохранения трека
+    }
+
+    private fun playTrack() {
+        // Реализуйте логику для воспроизведения трека
+    }
+
+    private fun likeTrack() {
+        // Реализуйте логику для лайка трека
+    }
+
 }

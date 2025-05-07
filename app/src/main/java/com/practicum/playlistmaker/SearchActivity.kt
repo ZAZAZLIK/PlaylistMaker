@@ -177,7 +177,14 @@ class SearchActivity : AppCompatActivity() {
                         val searchResponse = response.body()!!
                         if (searchResponse.resultCount > 0) {
                             val tracks = searchResponse.results.map {
-                                Track(it.trackName, it.artistName, it.trackTimeMillis, it.artworkUrl100)
+                                Track(trackName = it.trackName,
+                                    artistName = it.artistName,
+                                    trackTimeMillis = it.trackTimeMillis,
+                                    artworkUrl100 = it.artworkUrl100,
+                                    collectionName = null,
+                                    releaseDate = null,
+                                    primaryGenreName = null,
+                                    country = null)
                             }
                             trackAdapter.updateTracks(tracks)
 
@@ -234,6 +241,11 @@ class SearchActivity : AppCompatActivity() {
             putExtra("ARTIST_NAME", track.artistName)
             putExtra("TRACK_TIME", track.trackTimeMillis)
             putExtra("ARTWORK_URL", track.artworkUrl100)
+
+            putExtra("COLLECTION_NAME", track.collectionName ?: "Неизвестен")
+            putExtra("RELEASE_DATE", track.releaseDate ?: "Не указано")
+            putExtra("PRIMARY_GENRE_NAME", track.primaryGenreName ?: "Неизвестен")
+            putExtra("COUNTRY", track.country ?: "Неизвестно")
         }
         activityResultLauncher.launch(intent)
     }
