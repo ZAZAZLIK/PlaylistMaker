@@ -2,16 +2,22 @@ package com.practicum.playlistmaker
 
 import android.app.Activity
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import android.os.Handler
 
 class TrackDetailsActivity : AppCompatActivity() {
     private var isFromSearchQuery: Boolean = false
+    private var mediaPlayer: MediaPlayer? = null
+    private lateinit var amountOfListeningTextView: TextView
+    private val handler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,7 +98,54 @@ class TrackDetailsActivity : AppCompatActivity() {
     }
 
     private fun playTrack() {
-        // Реализуйте логику для воспроизведения трека
+        val trackUrl = intent.getStringExtra("ARTWORK_URL")
+
+        if (!trackUrl.isNullOrEmpty()) {
+            try {
+                mediaPlayer?.release()
+                mediaPlayer = MediaPlayer().apply {
+                    setDataSource(trackUrl)
+
+                    setOnErrorListener { mp, what, extra ->
+                        Log.e("MediaPlayer", "Error occurred: what=$what, extra=$extra")
+                        true
+                    }
+
+                    prepare()
+                    start()
+                    updateListeningTime()
+                }
+            } catch (e: Exception) {
+                Log.e("TrackDetailsActivity", "Error playing track: ${e.message}")
+            }
+        } else {
+            Log.e("TrackDetailsActivity", "Track URL is empty or null")
+        }
+    }
+
+    private fun updateListeningTime() {
+        val runnable = object : Runnable {
+            override fun run() {
+                mediaPlayer?.let {
+                    if (it.isPlaying) {
+                        val currentPosition = it.currentPosition / 1000
+                        val formattedTime = String.format("%.2f", currentPosition.toFloat())
+                        amountOfListeningTextView.text = formattedTime
+                        handler.postDelayed(this, 1000)
+                    }
+                }
+            }
+        }
+
+        handler.post(runnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        mediaPlayer?.release()
+        mediaPlayer = null
+        handler.removeCallbacksAndMessages(null)
     }
 
     private fun likeTrack() {

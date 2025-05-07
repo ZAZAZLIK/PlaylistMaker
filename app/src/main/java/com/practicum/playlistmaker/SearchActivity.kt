@@ -181,10 +181,10 @@ class SearchActivity : AppCompatActivity() {
                                     artistName = it.artistName,
                                     trackTimeMillis = it.trackTimeMillis,
                                     artworkUrl100 = it.artworkUrl100,
-                                    collectionName = null,
-                                    releaseDate = null,
-                                    primaryGenreName = null,
-                                    country = null)
+                                    collectionName = it.collectionName,
+                                    releaseDate = it.releaseDate,
+                                    primaryGenreName = it.primaryGenreName,
+                                    country = it.country)
                             }
                             trackAdapter.updateTracks(tracks)
 

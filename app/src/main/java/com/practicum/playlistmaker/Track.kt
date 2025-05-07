@@ -5,10 +5,10 @@ data class Track(
     val artistName: String,
     val trackTimeMillis: Long,
     val artworkUrl100: String,
-    val collectionName: String? = null,
-    val releaseDate: String? = null,
-    val primaryGenreName: String? = null,
-    val country: String? = null
+    val collectionName: String,
+    val releaseDate: String,
+    val primaryGenreName: String,
+    val country: String
 ) {
     fun getFormattedTrackTime(): String {
         val minutes = trackTimeMillis / 1000 / 60
