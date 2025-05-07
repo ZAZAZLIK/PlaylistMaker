@@ -19,4 +19,14 @@
     <string name="thanks">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="message">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="share_the_app_name_text">Посмотрите этот замечательный курс по Андроид-разработке: https://practicum.yandex.ru/</string>
+    <string name="app_name_trek">YourAppName</string>
+    <string name="search_name_trek">Search Name</string>
+    <string name="track_duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="genre">Жанр</string>
+    <string name="country">Страна</string>
+    <string name="save_track">Сохранить трек</string>
+    <string name="play">Проигрыватель</string>
+    <string name="like_track">Отметить понравившейся</string>
 </resources>

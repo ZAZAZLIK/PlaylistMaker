@@ -8,15 +8,17 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
 
     private val gson = Gson()
     private val historyKey = "search_history"
+    private val MAX_HISTORY_SIZE = 10
 
     fun addTrack(track: Track) {
         val history = getHistory().toMutableList()
 
         history.removeIf { it.trackName == track.trackName && it.artistName == track.artistName }
+
         history.add(0, track)
 
-        if (history.size > 10) {
-            history.subList(10, history.size).clear()
+        if (history.size > MAX_HISTORY_SIZE) {
+            history.subList(MAX_HISTORY_SIZE, history.size).clear()
         }
 
         saveHistory(history)

@@ -5,10 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-
     android:paddingTop="2dp"
     android:paddingBottom="8dp"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="8dp"
+    android:clickable="true"
+    android:focusable="true">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -29,14 +30,17 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/padding_medium">
+        android:paddingLeft="@dimen/padding_medium"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/trackNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/color_text" />
+            android:textColor="@color/color_text"
+            android:ellipsize="end"
+            android:maxLines="1"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -77,5 +81,6 @@
         android:src="@drawable/baseline_arrow_forward_ios_24"
         app:tint="@color/color_icon"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="8dp"/>
+        android:layout_marginLeft="8dp"
+        android:gravity="center"/>
 </LinearLayout>

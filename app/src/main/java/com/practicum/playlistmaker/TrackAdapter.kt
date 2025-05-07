@@ -17,7 +17,7 @@ fun Context.dpToPx(dp: Int): Int {
 }
 
 class TrackAdapter(
-    private var tracks: List<Track>,
+    private var tracks: MutableList<Track>,
     private val onTrackClick: (Track) -> Unit
 ) : RecyclerView.Adapter<TrackAdapter.TrackViewHolder>() {
 
@@ -26,29 +26,30 @@ class TrackAdapter(
         private val artistNameTextView: TextView = itemView.findViewById(R.id.artistNameTextView)
         private val trackTimeTextView: TextView = itemView.findViewById(R.id.trackTimeTextView)
         private val artworkImageView: ImageView = itemView.findViewById(R.id.artworkImageView)
-        private val buttonTerms: ImageView = itemView.findViewById(R.id.btn_terms)
+
+        init {
+            itemView.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onTrackClick(tracks[position])
+                }
+            }
+        }
 
         fun bind(track: Track) {
             trackNameTextView.text = track.trackName
             artistNameTextView.text = track.artistName
             trackTimeTextView.text = track.getFormattedTrackTime()
 
-            val imageUrl = if (track.artworkUrl100.isNotBlank()) {
-                track.artworkUrl100
-            } else {
-                null
-            }
+            val imageUrl = track.artworkUrl100.ifBlank { null }
 
             Glide.with(itemView)
                 .load(imageUrl ?: R.drawable.placeholder)
-                .apply(RequestOptions().transform(RoundedCorners(itemView.context.dpToPx(10)))
+                .apply(RequestOptions()
+                    .transform(RoundedCorners(itemView.context.dpToPx(10)))
                     .placeholder(R.drawable.placeholder)
                     .centerCrop())
                 .into(artworkImageView)
-
-            buttonTerms.setOnClickListener {
-                onTrackClick(track)
-            }
         }
     }
 
@@ -64,7 +65,27 @@ class TrackAdapter(
     override fun getItemCount(): Int = tracks.size
 
     fun updateTracks(newTracks: List<Track>) {
-        tracks = newTracks
-        notifyDataSetChanged()
+        val oldTracks = tracks.toList()
+
+        tracks.clear()
+        tracks.addAll(newTracks)
+
+        val oldSize = oldTracks.size
+        val newSize = newTracks.size
+        val minSize = minOf(oldSize, newSize)
+
+        for (i in 0 until minSize) {
+            if (oldTracks[i] != newTracks[i]) {
+                notifyItemChanged(i)
+            }
+        }
+
+        if (newSize > oldSize) {
+            notifyItemRangeInserted(oldSize, newSize - oldSize)
+        }
+
+        else if (oldSize > newSize) {
+            notifyItemRangeRemoved(newSize, oldSize - newSize)
+        }
     }
 }
