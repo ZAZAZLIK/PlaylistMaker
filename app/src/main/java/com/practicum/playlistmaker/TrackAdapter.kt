@@ -12,6 +12,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import android.util.TypedValue
 
+
 fun Context.dpToPx(dp: Int): Int {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), resources.displayMetrics).toInt()
 }
@@ -45,10 +46,12 @@ class TrackAdapter(
 
             Glide.with(itemView)
                 .load(imageUrl ?: R.drawable.placeholder)
-                .apply(RequestOptions()
-                    .transform(RoundedCorners(itemView.context.dpToPx(10)))
-                    .placeholder(R.drawable.placeholder)
-                    .centerCrop())
+                .apply(
+                    RequestOptions()
+                        .transform(RoundedCorners(itemView.context.dpToPx(10)))
+                        .placeholder(R.drawable.placeholder)
+                        .centerCrop()
+                )
                 .into(artworkImageView)
         }
     }
@@ -82,9 +85,7 @@ class TrackAdapter(
 
         if (newSize > oldSize) {
             notifyItemRangeInserted(oldSize, newSize - oldSize)
-        }
-
-        else if (oldSize > newSize) {
+        } else if (oldSize > newSize) {
             notifyItemRangeRemoved(newSize, oldSize - newSize)
         }
     }
