@@ -54,7 +54,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout
 android:layout_width="match_parent"
-android:layout_height="wrap_content"
+android:layout_height="0dp"
 android:layout_marginTop="@dimen/thirty"
 app:layout_constraintTop_toBottomOf="@+id/artistNameTextView"
 android:layout_marginHorizontal="@dimen/twenty_four" >
@@ -82,9 +82,9 @@ android:layout_marginHorizontal="@dimen/twenty_four" >
     app:layout_constraintStart_toEndOf="@+id/saveTrackImageView"
     app:layout_constraintEnd_toStartOf="@+id/likeTrackImageView"
     app:layout_constraintTop_toTopOf="parent"
-    android:layout_marginTop="@dimen/text_size_normal"
+    android:layout_marginTop="@dimen/padding_medium"
     app:layout_constraintBottom_toBottomOf="parent"
-    android:layout_marginBottom="@dimen/text_size_normal"/>
+    android:layout_marginBottom="@dimen/padding_medium"/>
 
 <ImageView
     android:id="@+id/likeTrackImageView"
@@ -108,7 +108,7 @@ android:layout_marginHorizontal="@dimen/twenty_four" >
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toBottomOf="@id/artistNameTextView"
-    android:layout_marginTop="134dp"
+    android:layout_marginTop="132dp"
     android:textColor="@color/color_text"
     android:contentDescription="@string/time_to_lose"
     android:layout_marginHorizontal="0dp"
@@ -120,129 +120,132 @@ android:layout_marginHorizontal="@dimen/twenty_four" >
     android:paddingEnd="40dp"/>
 
 <TextView
-android:id="@+id/trackTimeLabel"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="@string/track_duration"
-android:textColor="@color/gray"
-android:textSize="@dimen/thirteen"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/artistNameTextView"
-android:layout_marginTop="189dp"
-android:layout_marginStart="@dimen/twenty_four"/>
+    android:id="@+id/trackTimeLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/track_duration"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/artistNameTextView"
+    android:layout_marginTop="189dp"
+    android:layout_marginStart="@dimen/twenty_four"/>
 
 <TextView
-android:id="@+id/trackTimeValue"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:textColor="@color/color_text"
-android:textAlignment="viewEnd"
-android:textSize="@dimen/thirteen"
-android:contentDescription="@string/track_duration"
-app:layout_constraintEnd_toEndOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/artistNameTextView"
-android:layout_marginTop="189dp"
-android:layout_marginEnd="@dimen/twenty_four"/>
+    android:id="@+id/trackTimeValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/track_duration"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/artistNameTextView"
+    android:layout_marginTop="189dp"
+    android:layout_marginEnd="@dimen/twenty_four"/>
 
 <TextView
-android:id="@+id/albumLabel"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="@string/album"
-android:textColor="@color/gray"
-android:textSize="@dimen/thirteen"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/trackTimeLabel"
-android:layout_marginTop="@dimen/eighteen"
-android:layout_marginStart="@dimen/twenty_four"/>
+    android:id="@+id/albumLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/album"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/trackTimeLabel"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginStart="@dimen/twenty_four"/>
 
 <TextView
-android:id="@+id/albumValue"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:textColor="@color/color_text"
-android:textAlignment="viewEnd"
-android:textSize="@dimen/thirteen"
-android:contentDescription="@string/album"
-app:layout_constraintEnd_toEndOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/trackTimeValue"
-android:layout_marginTop="@dimen/eighteen"
-android:layout_marginEnd="@dimen/twenty_four"/>
+    android:id="@+id/albumValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/album"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/trackTimeValue"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginEnd="@dimen/twenty_four"
+    android:maxWidth="235dp"
+    android:singleLine="true"
+    android:ellipsize="end"/>
 
 <TextView
-android:id="@+id/yearLabel"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="@string/year"
-android:textColor="@color/gray"
-android:textSize="@dimen/thirteen"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/albumLabel"
-android:layout_marginTop="@dimen/eighteen"
-android:layout_marginStart="@dimen/twenty_four"/>
+    android:id="@+id/yearLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/year"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/albumLabel"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginStart="@dimen/twenty_four"/>
 
 <TextView
-android:id="@+id/yearValue"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:textColor="@color/color_text"
-android:textAlignment="viewEnd"
-android:textSize="@dimen/thirteen"
-android:contentDescription="@string/year"
-app:layout_constraintEnd_toEndOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/albumValue"
-android:layout_marginTop="@dimen/eighteen"
-android:layout_marginEnd="@dimen/twenty_four"/>
+    android:id="@+id/yearValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/year"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/albumValue"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginEnd="@dimen/twenty_four"/>
 
 <TextView
-android:id="@+id/genreLabel"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="@string/genre"
-android:textColor="@color/gray"
-android:textSize="@dimen/thirteen"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/yearLabel"
-android:layout_marginTop="@dimen/eighteen"
-android:layout_marginStart="@dimen/twenty_four"/>
+    android:id="@+id/genreLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/genre"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/yearLabel"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginStart="@dimen/twenty_four"/>
 
 <TextView
-android:id="@+id/genreValue"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:textColor="@color/color_text"
-android:textAlignment="viewEnd"
-android:textSize="@dimen/thirteen"
-android:contentDescription="@string/genre"
-app:layout_constraintEnd_toEndOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/yearValue"
-android:layout_marginTop="@dimen/eighteen"
-android:layout_marginEnd="@dimen/twenty_four"/>
+    android:id="@+id/genreValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/genre"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/yearValue"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginEnd="@dimen/twenty_four"/>
 
 <TextView
-android:id="@+id/countryLabel"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="@string/country"
-android:textColor="@color/gray"
-android:textSize="@dimen/thirteen"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/genreLabel"
-android:layout_marginTop="@dimen/eighteen"
-android:layout_marginStart="@dimen/twenty_four"/>
+    android:id="@+id/countryLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/country"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/genreLabel"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginStart="@dimen/twenty_four"/>
 
 <TextView
-android:id="@+id/countryValue"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:textColor="@color/color_text"
-android:textAlignment="viewEnd"
-android:textSize="@dimen/thirteen"
-android:contentDescription="@string/country"
-app:layout_constraintEnd_toEndOf="parent"
-app:layout_constraintTop_toBottomOf="@+id/genreValue"
-android:layout_marginTop="@dimen/eighteen"
-android:layout_marginEnd="@dimen/twenty_four"/>
+    android:id="@+id/countryValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/country"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/genreValue"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginEnd="@dimen/twenty_four"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
