@@ -114,6 +114,10 @@ class TrackDetailsActivity : AppCompatActivity() {
                     setDataSource(previewUrl)
                     prepare()
                     start()
+
+                    setOnCompletionListener {
+                        handlePlaybackCompletion()
+                    }
                 }
                 isPlaying = true
                 updateListeningTime()
@@ -125,6 +129,18 @@ class TrackDetailsActivity : AppCompatActivity() {
             Log.e("TrackDetailsActivity", "Preview URL is empty or null")
             Toast.makeText(this, "Не удалось воспроизвести трек. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun handlePlaybackCompletion() {
+
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
+
+        isPlaying = false
+        amountOfListeningTextView.text = "0:00"
+        handler.removeCallbacksAndMessages(null)
+        updatePlayButton()
     }
 
     private fun pauseTrack() {
