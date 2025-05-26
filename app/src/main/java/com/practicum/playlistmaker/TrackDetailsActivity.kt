@@ -12,21 +12,29 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import android.os.Handler
+import android.os.Looper
+import android.widget.Toast
+import java.util.Locale
 
 class TrackDetailsActivity : AppCompatActivity() {
     private var isFromSearchQuery: Boolean = false
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var amountOfListeningTextView: TextView
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
+
+    private lateinit var playButton: ImageView
+    private var isPlaying = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_track_details)
 
+        amountOfListeningTextView = findViewById(R.id.theAmountOfListening)
+        playButton = findViewById(R.id.playButton)
+
         isFromSearchQuery = intent.getBooleanExtra("isFromSearchQuery", false)
 
         val backButton: ImageButton = findViewById(R.id.button_back)
-
         backButton.setOnClickListener {
             val intent = Intent()
             intent.putExtra("isFromSearchQuery", true)
@@ -35,19 +43,21 @@ class TrackDetailsActivity : AppCompatActivity() {
         }
 
         val saveTrackImageView: ImageView = findViewById(R.id.saveTrackImageView)
-
         saveTrackImageView.setOnClickListener {
             saveTrack()
         }
 
-        val playButton: ImageView = findViewById(R.id.playButton)
+        val previewUrl = intent.getStringExtra("PREVIEW_URL")
 
         playButton.setOnClickListener {
-            playTrack()
+            if (isPlaying) {
+                pauseTrack()
+            } else {
+                playTrack(previewUrl)
+            }
         }
 
         val likeTrackImageView: ImageView = findViewById(R.id.likeTrackImageView)
-
         likeTrackImageView.setOnClickListener {
             likeTrack()
         }
@@ -67,10 +77,10 @@ class TrackDetailsActivity : AppCompatActivity() {
         val artistNameTextView: TextView = findViewById(R.id.artistNameTextView)
         val trackTimeTextView: TextView = findViewById(R.id.trackTimeValue)
         val artworkImageView: ImageView = findViewById(R.id.artworkImageView)
-        val collectionNameTextView: TextView = findViewById(R.id.albumValue) // Альбом
-        val releaseDateTextView: TextView = findViewById(R.id.yearValue) // Год
-        val primaryGenreNameTextView: TextView = findViewById(R.id.genreValue) // Жанр
-        val countryTextView: TextView = findViewById(R.id.countryValue) // Страна
+        val collectionNameTextView: TextView = findViewById(R.id.albumValue)
+        val releaseDateTextView: TextView = findViewById(R.id.yearValue)
+        val primaryGenreNameTextView: TextView = findViewById(R.id.genreValue)
+        val countryTextView: TextView = findViewById(R.id.countryValue)
 
         trackNameTextView.text = trackName
         artistNameTextView.text = artistName
@@ -79,7 +89,6 @@ class TrackDetailsActivity : AppCompatActivity() {
         releaseDateTextView.text = releaseDate
         primaryGenreNameTextView.text = primaryGenreName
         countryTextView.text = country
-
 
         Glide.with(this)
             .load(artworkUrl)
@@ -97,30 +106,31 @@ class TrackDetailsActivity : AppCompatActivity() {
         // Реализуйте логику для сохранения трека
     }
 
-    private fun playTrack() {
-        val trackUrl = intent.getStringExtra("ARTWORK_URL")
-
-        if (!trackUrl.isNullOrEmpty()) {
+    private fun playTrack(previewUrl: String?) {
+        if (!previewUrl.isNullOrEmpty()) {
             try {
                 mediaPlayer?.release()
                 mediaPlayer = MediaPlayer().apply {
-                    setDataSource(trackUrl)
-
-                    setOnErrorListener { mp, what, extra ->
-                        Log.e("MediaPlayer", "Error occurred: what=$what, extra=$extra")
-                        true
-                    }
-
+                    setDataSource(previewUrl)
                     prepare()
                     start()
-                    updateListeningTime()
                 }
+                isPlaying = true
+                updateListeningTime()
+                updatePlayButton()
             } catch (e: Exception) {
-                Log.e("TrackDetailsActivity", "Error playing track: ${e.message}")
+                Log.e("TrackDetailsActivity", "Error playing track: ${e.message}", e)
             }
         } else {
-            Log.e("TrackDetailsActivity", "Track URL is empty or null")
+            Log.e("TrackDetailsActivity", "Preview URL is empty or null")
+            Toast.makeText(this, "Не удалось воспроизвести трек. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun pauseTrack() {
+        mediaPlayer?.pause()
+        isPlaying = false
+        updatePlayButton()
     }
 
     private fun updateListeningTime() {
@@ -128,21 +138,35 @@ class TrackDetailsActivity : AppCompatActivity() {
             override fun run() {
                 mediaPlayer?.let {
                     if (it.isPlaying) {
-                        val currentPosition = it.currentPosition / 1000
-                        val formattedTime = String.format("%.2f", currentPosition.toFloat())
-                        amountOfListeningTextView.text = formattedTime
+                        val currentPosition = it.currentPosition / 1000 
+                        val minutes = currentPosition / 60
+                        val seconds = currentPosition % 60
+
+                        amountOfListeningTextView.text = String.format(
+                            Locale.getDefault(),
+                            "%02d:%02d",
+                            minutes,
+                            seconds
+                        )
+
                         handler.postDelayed(this, 1000)
                     }
                 }
             }
         }
-
         handler.post(runnable)
+    }
+
+    private fun updatePlayButton() {
+        if (isPlaying) {
+            playButton.setImageResource(R.drawable.baseline_pause_24)
+        } else {
+            playButton.setImageResource(R.drawable.baseline_play_arrow_24)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
         mediaPlayer?.release()
         mediaPlayer = null
         handler.removeCallbacksAndMessages(null)
@@ -151,5 +175,4 @@ class TrackDetailsActivity : AppCompatActivity() {
     private fun likeTrack() {
         // Реализуйте логику для лайка трека
     }
-
 }
