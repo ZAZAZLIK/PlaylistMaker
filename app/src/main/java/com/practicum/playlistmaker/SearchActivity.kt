@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -49,6 +50,7 @@ class SearchActivity : AppCompatActivity() {
     private var isFromSearchQuery: Boolean = false
     private val searchQueryFlow = MutableStateFlow("")
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,7 +127,41 @@ class SearchActivity : AppCompatActivity() {
             }
         })
 
+        setupSearchFlow()
 
+    }
+
+    private fun setupSearchFlow() {
+        coroutineScope.launch {
+            searchQueryFlow
+                .debounce(2000)
+                .collect { query ->
+                    performSearch(query)
+                }
+        }
+        searchInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchText = s.toString()
+                buttonClear.visibility = if (searchText.isEmpty()) View.GONE else View.VISIBLE
+
+                searchQueryFlow.value = searchText
+
+                if (searchText.isEmpty()) {
+                    updateHistoryUI()
+                    trackRecyclerView.visibility = View.GONE
+                    noResultsLayout.visibility = View.GONE
+                    serverErrorLayout.visibility = View.GONE
+                    clearHistoryButton.visibility =
+                        if (searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
+                } else {
+                    historyLayout.visibility = View.GONE
+                    clearHistoryButton.visibility = View.GONE
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 
     private fun initializeViews() {
@@ -144,6 +180,8 @@ class SearchActivity : AppCompatActivity() {
             //    updateHistoryUI()
         }
         trackRecyclerView.adapter = trackAdapter
+
+        progressBar = findViewById(R.id.progress_bar)
 
         historyLayout = findViewById(R.id.history_layout)
         historyTitle = findViewById(R.id.history_title)
@@ -177,8 +215,13 @@ class SearchActivity : AppCompatActivity() {
             setViewVisibility(trackRecyclerView, true)
             historyLayout.visibility = View.GONE
 
+            progressBar.visibility = View.VISIBLE
+
             iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
                 override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+
+                    progressBar.visibility = View.GONE
+
                     if (response.isSuccessful && response.body() != null) {
                         val searchResponse = response.body()!!
                         if (searchResponse.resultCount > 0) {
@@ -190,7 +233,8 @@ class SearchActivity : AppCompatActivity() {
                                     collectionName = it.collectionName,
                                     releaseDate = it.releaseDate,
                                     primaryGenreName = it.primaryGenreName,
-                                    country = it.country)
+                                    country = it.country,
+                                    previewUrl = it.previewUrl)
                             }
                             trackAdapter.updateTracks(tracks)
 
@@ -207,6 +251,9 @@ class SearchActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+
+                    progressBar.visibility = View.GONE
+
                     setViewVisibility(trackRecyclerView, false)
                     setViewVisibility(serverErrorLayout, true)
                 }
@@ -216,6 +263,8 @@ class SearchActivity : AppCompatActivity() {
             setViewVisibility(trackRecyclerView, false)
             setViewVisibility(noResultsLayout, false)
             setViewVisibility(serverErrorLayout, false)
+
+            progressBar.visibility = View.GONE
         }
     }
 
@@ -252,6 +301,7 @@ class SearchActivity : AppCompatActivity() {
             putExtra("RELEASE_DATE", track.releaseDate ?: "Не указано")
             putExtra("PRIMARY_GENRE_NAME", track.primaryGenreName ?: "Неизвестен")
             putExtra("COUNTRY", track.country ?: "Неизвестно")
+            putExtra("PREVIEW_URL", track.previewUrl ?: "Неизвестно")
         }
         activityResultLauncher.launch(intent)
     }
@@ -305,4 +355,3 @@ class SearchActivity : AppCompatActivity() {
         view.visibility = if (isVisible) View.VISIBLE else View.GONE
     }
 }
-
