@@ -12,29 +12,21 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import android.os.Handler
-import android.os.Looper
-import android.widget.Toast
-import java.util.Locale
 
 class TrackDetailsActivity : AppCompatActivity() {
     private var isFromSearchQuery: Boolean = false
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var amountOfListeningTextView: TextView
-    private val handler = Handler(Looper.getMainLooper())
-
-    private lateinit var playButton: ImageView
-    private var isPlaying = false
+    private val handler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_track_details)
 
-        amountOfListeningTextView = findViewById(R.id.theAmountOfListening)
-        playButton = findViewById(R.id.playButton)
-
         isFromSearchQuery = intent.getBooleanExtra("isFromSearchQuery", false)
 
         val backButton: ImageButton = findViewById(R.id.button_back)
+
         backButton.setOnClickListener {
             val intent = Intent()
             intent.putExtra("isFromSearchQuery", true)
@@ -43,21 +35,19 @@ class TrackDetailsActivity : AppCompatActivity() {
         }
 
         val saveTrackImageView: ImageView = findViewById(R.id.saveTrackImageView)
+
         saveTrackImageView.setOnClickListener {
             saveTrack()
         }
 
-        val previewUrl = intent.getStringExtra("PREVIEW_URL")
+        val playButton: ImageView = findViewById(R.id.playButton)
 
         playButton.setOnClickListener {
-            if (isPlaying) {
-                pauseTrack()
-            } else {
-                playTrack(previewUrl)
-            }
+            playTrack()
         }
 
         val likeTrackImageView: ImageView = findViewById(R.id.likeTrackImageView)
+
         likeTrackImageView.setOnClickListener {
             likeTrack()
         }
@@ -77,10 +67,10 @@ class TrackDetailsActivity : AppCompatActivity() {
         val artistNameTextView: TextView = findViewById(R.id.artistNameTextView)
         val trackTimeTextView: TextView = findViewById(R.id.trackTimeValue)
         val artworkImageView: ImageView = findViewById(R.id.artworkImageView)
-        val collectionNameTextView: TextView = findViewById(R.id.albumValue)
-        val releaseDateTextView: TextView = findViewById(R.id.yearValue)
-        val primaryGenreNameTextView: TextView = findViewById(R.id.genreValue)
-        val countryTextView: TextView = findViewById(R.id.countryValue)
+        val collectionNameTextView: TextView = findViewById(R.id.albumValue) // Альбом
+        val releaseDateTextView: TextView = findViewById(R.id.yearValue) // Год
+        val primaryGenreNameTextView: TextView = findViewById(R.id.genreValue) // Жанр
+        val countryTextView: TextView = findViewById(R.id.countryValue) // Страна
 
         trackNameTextView.text = trackName
         artistNameTextView.text = artistName
@@ -89,6 +79,7 @@ class TrackDetailsActivity : AppCompatActivity() {
         releaseDateTextView.text = releaseDate
         primaryGenreNameTextView.text = primaryGenreName
         countryTextView.text = country
+
 
         Glide.with(this)
             .load(artworkUrl)
@@ -106,47 +97,30 @@ class TrackDetailsActivity : AppCompatActivity() {
         // Реализуйте логику для сохранения трека
     }
 
-    private fun playTrack(previewUrl: String?) {
-        if (!previewUrl.isNullOrEmpty()) {
+    private fun playTrack() {
+        val trackUrl = intent.getStringExtra("ARTWORK_URL")
+
+        if (!trackUrl.isNullOrEmpty()) {
             try {
                 mediaPlayer?.release()
                 mediaPlayer = MediaPlayer().apply {
-                    setDataSource(previewUrl)
+                    setDataSource(trackUrl)
+
+                    setOnErrorListener { mp, what, extra ->
+                        Log.e("MediaPlayer", "Error occurred: what=$what, extra=$extra")
+                        true
+                    }
+
                     prepare()
                     start()
-
-                    setOnCompletionListener {
-                        handlePlaybackCompletion()
-                    }
+                    updateListeningTime()
                 }
-                isPlaying = true
-                updateListeningTime()
-                updatePlayButton()
             } catch (e: Exception) {
-                Log.e("TrackDetailsActivity", "Error playing track: ${e.message}", e)
+                Log.e("TrackDetailsActivity", "Error playing track: ${e.message}")
             }
         } else {
-            Log.e("TrackDetailsActivity", "Preview URL is empty or null")
-            Toast.makeText(this, "Не удалось воспроизвести трек. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
+            Log.e("TrackDetailsActivity", "Track URL is empty or null")
         }
-    }
-
-    private fun handlePlaybackCompletion() {
-
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
-
-        isPlaying = false
-        amountOfListeningTextView.text = "0:00"
-        handler.removeCallbacksAndMessages(null)
-        updatePlayButton()
-    }
-
-    private fun pauseTrack() {
-        mediaPlayer?.pause()
-        isPlaying = false
-        updatePlayButton()
     }
 
     private fun updateListeningTime() {
@@ -154,35 +128,21 @@ class TrackDetailsActivity : AppCompatActivity() {
             override fun run() {
                 mediaPlayer?.let {
                     if (it.isPlaying) {
-                        val currentPosition = it.currentPosition / 1000 
-                        val minutes = currentPosition / 60
-                        val seconds = currentPosition % 60
-
-                        amountOfListeningTextView.text = String.format(
-                            Locale.getDefault(),
-                            "%02d:%02d",
-                            minutes,
-                            seconds
-                        )
-
+                        val currentPosition = it.currentPosition / 1000
+                        val formattedTime = String.format("%.2f", currentPosition.toFloat())
+                        amountOfListeningTextView.text = formattedTime
                         handler.postDelayed(this, 1000)
                     }
                 }
             }
         }
-        handler.post(runnable)
-    }
 
-    private fun updatePlayButton() {
-        if (isPlaying) {
-            playButton.setImageResource(R.drawable.baseline_pause_24)
-        } else {
-            playButton.setImageResource(R.drawable.baseline_play_arrow_24)
-        }
+        handler.post(runnable)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
         mediaPlayer?.release()
         mediaPlayer = null
         handler.removeCallbacksAndMessages(null)
