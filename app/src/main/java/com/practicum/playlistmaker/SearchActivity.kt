@@ -25,6 +25,7 @@ import retrofit2.Call
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -78,6 +79,8 @@ class SearchActivity : AppCompatActivity() {
 
         buttonClear.setOnClickListener { clearSearch() }
 
+        var searchJob: Job? = null
+
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -94,7 +97,14 @@ class SearchActivity : AppCompatActivity() {
                 } else {
                     historyLayout.visibility = View.GONE
                     clearHistoryButton.visibility = View.GONE
-                    performSearch(searchText)
+
+                    searchJob?.cancel()
+
+                    searchJob = CoroutineScope(Dispatchers.Main).launch {
+                        delay(300)
+
+                        performSearch(searchText)
+                    }
                 }
             }
 
@@ -132,13 +142,17 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupSearchFlow() {
-        coroutineScope.launch {
-            searchQueryFlow
-                .debounce(2000)
-                .collect { query ->
+        searchQueryFlow
+            .debounce(2000)
+            .onEach { query ->
+                if (query.isNotEmpty()) {
                     performSearch(query)
+                } else {
+                    resetUI()
                 }
-        }
+            }
+            .launchIn(lifecycleScope)
+
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -155,11 +169,13 @@ class SearchActivity : AppCompatActivity() {
                     serverErrorLayout.visibility = View.GONE
                     clearHistoryButton.visibility =
                         if (searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
+                    progressBar.visibility = View.GONE
                 } else {
                     historyLayout.visibility = View.GONE
                     clearHistoryButton.visibility = View.GONE
                 }
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
     }
@@ -209,63 +225,53 @@ class SearchActivity : AppCompatActivity() {
 
     private fun performSearch(query: String) {
         lastSearchQuery = query
-        if (query.isNotBlank()) {
-            setViewVisibility(noResultsLayout, false)
-            setViewVisibility(serverErrorLayout, false)
-            setViewVisibility(trackRecyclerView, true)
-            historyLayout.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
 
-            progressBar.visibility = View.VISIBLE
+        iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
+            override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+                progressBar.visibility = View.GONE
 
-            iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
-                override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-
-                    progressBar.visibility = View.GONE
-
-                    if (response.isSuccessful && response.body() != null) {
-                        val searchResponse = response.body()!!
-                        if (searchResponse.resultCount > 0) {
-                            val tracks = searchResponse.results.map {
-                                Track(trackName = it.trackName,
-                                    artistName = it.artistName,
-                                    trackTimeMillis = it.trackTimeMillis,
-                                    artworkUrl100 = it.artworkUrl100,
-                                    collectionName = it.collectionName,
-                                    releaseDate = it.releaseDate,
-                                    primaryGenreName = it.primaryGenreName,
-                                    country = it.country,
-                                    previewUrl = it.previewUrl)
-                            }
-                            trackAdapter.updateTracks(tracks)
-
-                            setViewVisibility(trackRecyclerView, true)
-                            setViewVisibility(noResultsLayout, false)
-                        } else {
-                            setViewVisibility(trackRecyclerView, false)
-                            setViewVisibility(noResultsLayout, true)
+                if (response.isSuccessful && response.body() != null) {
+                    val searchResponse = response.body()!!
+                    if (searchResponse.resultCount > 0) {
+                        val tracks = searchResponse.results.map {
+                            Track(trackName = it.trackName,
+                                artistName = it.artistName,
+                                trackTimeMillis = it.trackTimeMillis,
+                                artworkUrl100 = it.artworkUrl100,
+                                collectionName = it.collectionName,
+                                releaseDate = it.releaseDate,
+                                primaryGenreName = it.primaryGenreName,
+                                country = it.country,
+                                previewUrl = it.previewUrl)
                         }
+                        trackAdapter.updateTracks(tracks)
+                        setViewVisibility(trackRecyclerView, true)
+                        setViewVisibility(noResultsLayout, false)
                     } else {
                         setViewVisibility(trackRecyclerView, false)
-                        setViewVisibility(serverErrorLayout, true)
+                        setViewVisibility(noResultsLayout, true)
                     }
-                }
-
-                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-
-                    progressBar.visibility = View.GONE
-
+                } else {
                     setViewVisibility(trackRecyclerView, false)
                     setViewVisibility(serverErrorLayout, true)
                 }
-            })
-        } else {
-            updateHistoryUI()
-            setViewVisibility(trackRecyclerView, false)
-            setViewVisibility(noResultsLayout, false)
-            setViewVisibility(serverErrorLayout, false)
+            }
 
-            progressBar.visibility = View.GONE
-        }
+            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
+                progressBar.visibility = View.GONE
+                setViewVisibility(trackRecyclerView, false)
+                setViewVisibility(serverErrorLayout, true)
+            }
+        })
+    }
+    private fun resetUI() {
+
+        updateHistoryUI()
+        setViewVisibility(trackRecyclerView, false)
+        setViewVisibility(noResultsLayout, false)
+        setViewVisibility(serverErrorLayout, false)
+        progressBar.visibility = View.GONE
     }
 
     private fun updateClearHistoryButton() {
