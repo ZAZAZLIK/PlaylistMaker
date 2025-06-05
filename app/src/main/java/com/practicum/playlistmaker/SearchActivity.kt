@@ -25,9 +25,14 @@ import retrofit2.Call
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchInput: EditText
@@ -50,7 +55,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private var isFromSearchQuery: Boolean = false
     private val searchQueryFlow = MutableStateFlow("")
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,7 +123,10 @@ class SearchActivity : AppCompatActivity() {
         }
 
         retryButton.setOnClickListener {
-            performSearch(searchText)
+            serverErrorLayout.visibility = View.GONE
+            progressBar.isVisible = true
+
+            performSearch(lastSearchQuery ?: "")
         }
 
         clearHistoryButton.setOnClickListener {
@@ -159,17 +166,10 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 searchText = s.toString()
                 buttonClear.visibility = if (searchText.isEmpty()) View.GONE else View.VISIBLE
-
                 searchQueryFlow.value = searchText
 
                 if (searchText.isEmpty()) {
-                    updateHistoryUI()
-                    trackRecyclerView.visibility = View.GONE
-                    noResultsLayout.visibility = View.GONE
-                    serverErrorLayout.visibility = View.GONE
-                    clearHistoryButton.visibility =
-                        if (searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
-                    progressBar.visibility = View.GONE
+                    resetUI()
                 } else {
                     historyLayout.visibility = View.GONE
                     clearHistoryButton.visibility = View.GONE
@@ -225,17 +225,18 @@ class SearchActivity : AppCompatActivity() {
 
     private fun performSearch(query: String) {
         lastSearchQuery = query
-        progressBar.visibility = View.VISIBLE
+        progressBar.isVisible = true
 
         iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
             override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-                progressBar.visibility = View.GONE
+                progressBar.isVisible = false
 
                 if (response.isSuccessful && response.body() != null) {
                     val searchResponse = response.body()!!
                     if (searchResponse.resultCount > 0) {
                         val tracks = searchResponse.results.map {
-                            Track(trackName = it.trackName,
+                            Track(
+                                trackName = it.trackName,
                                 artistName = it.artistName,
                                 trackTimeMillis = it.trackTimeMillis,
                                 artworkUrl100 = it.artworkUrl100,
@@ -243,28 +244,34 @@ class SearchActivity : AppCompatActivity() {
                                 releaseDate = it.releaseDate,
                                 primaryGenreName = it.primaryGenreName,
                                 country = it.country,
-                                previewUrl = it.previewUrl)
+                                previewUrl = it.previewUrl
+                            )
                         }
                         trackAdapter.updateTracks(tracks)
-                        setViewVisibility(trackRecyclerView, true)
-                        setViewVisibility(noResultsLayout, false)
+                        trackRecyclerView.isVisible = true
+                        noResultsLayout.isVisible = false
+                        serverErrorLayout.isVisible = false
                     } else {
-                        setViewVisibility(trackRecyclerView, false)
-                        setViewVisibility(noResultsLayout, true)
+                        trackRecyclerView.isVisible = false
+                        noResultsLayout.isVisible = true
+                        serverErrorLayout.isVisible = false
                     }
                 } else {
-                    setViewVisibility(trackRecyclerView, false)
-                    setViewVisibility(serverErrorLayout, true)
+                    trackRecyclerView.isVisible = false
+                    noResultsLayout.isVisible = false
+                    serverErrorLayout.isVisible = true
                 }
             }
 
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                progressBar.visibility = View.GONE
-                setViewVisibility(trackRecyclerView, false)
-                setViewVisibility(serverErrorLayout, true)
+                progressBar.isVisible = false
+                trackRecyclerView.isVisible = false
+                noResultsLayout.isVisible = false
+                serverErrorLayout.isVisible = true
             }
         })
     }
+
     private fun resetUI() {
 
         updateHistoryUI()
