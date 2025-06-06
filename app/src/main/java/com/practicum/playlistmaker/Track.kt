@@ -8,7 +8,8 @@ data class Track(
     val collectionName: String,
     val releaseDate: String,
     val primaryGenreName: String,
-    val country: String
+    val country: String,
+    val previewUrl: String
 ) {
     fun getFormattedTrackTime(): String {
         val minutes = trackTimeMillis / 1000 / 60
@@ -25,7 +26,8 @@ data class Track(
                 collectionName == other.collectionName &&
                 releaseDate == other.releaseDate &&
                 primaryGenreName == other.primaryGenreName &&
-                country == other.country
+                country == other.country &&
+                previewUrl == other.previewUrl
     }
 
     override fun hashCode(): Int {
@@ -37,6 +39,7 @@ data class Track(
         result = 31 * result + releaseDate.hashCode()
         result = 31 * result + primaryGenreName.hashCode()
         result = 31 * result + country.hashCode()
+        result = 31 * result + previewUrl.hashCode()
         return result
     }
 }

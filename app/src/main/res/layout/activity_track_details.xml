@@ -247,5 +247,5 @@ android:layout_marginHorizontal="@dimen/twenty_four" >
     android:layout_marginTop="@dimen/eighteen"
     android:layout_marginEnd="@dimen/twenty_four"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 
