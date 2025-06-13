@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation
 
 import android.app.Activity
 import android.content.Intent
@@ -14,6 +14,7 @@ import com.bumptech.glide.request.RequestOptions
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import com.practicum.playlistmaker.R
 import java.util.Locale
 
 class TrackDetailsActivity : AppCompatActivity() {
@@ -192,4 +193,3 @@ class TrackDetailsActivity : AppCompatActivity() {
         // Реализуйте логику для лайка трека
     }
 }
-

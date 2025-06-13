@@ -1,7 +1,8 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.practicum.playlistmaker.domain.impl.PreferencesHelper
 
 class App : Application() {
     private lateinit var preferencesHelper: PreferencesHelper
