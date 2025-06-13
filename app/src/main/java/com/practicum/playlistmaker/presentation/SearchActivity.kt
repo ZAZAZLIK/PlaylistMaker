@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.presentation
 
 import android.app.Activity
 import android.content.Intent
@@ -27,6 +27,12 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.ui.TrackAdapter
+import com.practicum.playlistmaker.data.dto.SearchHistory
+import com.practicum.playlistmaker.data.dto.SearchResponse
+import com.practicum.playlistmaker.data.dto.Track
+import com.practicum.playlistmaker.data.network.ITunesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
