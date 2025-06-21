@@ -11,11 +11,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.domain.impl.PreferencesHelper
+import com.practicum.playlistmaker.data.PreferencesRepository
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var preferencesHelper: PreferencesHelper
+    private lateinit var preferencesRepository: PreferencesRepository
     private lateinit var backButton: ImageButton
     private lateinit var titleTextView: MaterialTextView
     private lateinit var themeSwitch: SwitchMaterial
@@ -31,10 +31,9 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_settings)
 
-        preferencesHelper = PreferencesHelper(this)
+        preferencesRepository = PreferencesRepository(this)
 
         shareText = getString(R.string.share_the_app_name_text)
         supportEmail = getString(R.string.email)
@@ -53,10 +52,12 @@ class SettingsActivity : AppCompatActivity() {
         supportButton = findViewById(R.id.btn_support)
         termsButton = findViewById(R.id.btn_terms)
 
-        themeSwitch.isChecked = preferencesHelper.isDarkTheme()
+
+        themeSwitch.isChecked = preferencesRepository.isDarkTheme()
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            preferencesHelper.saveTheme(isChecked)
+
+            preferencesRepository.saveTheme(isChecked)
             AppCompatDelegate.setDefaultNightMode(
                 if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
                 else AppCompatDelegate.MODE_NIGHT_NO
@@ -88,9 +89,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun writeToSupport() {
-        val supportEmail = getString(R.string.email)
-        val subject = Uri.encode(getString(R.string.message))
-        val body = Uri.encode(getString(R.string.thanks))
+        val subject = Uri.encode(emailSubject)
+        val body = Uri.encode(emailBody)
 
         val emailUri = Uri.parse("mailto:$supportEmail?subject=$subject&body=$body")
 

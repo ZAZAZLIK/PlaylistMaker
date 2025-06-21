@@ -12,7 +12,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import android.util.TypedValue
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.data.dto.Track
+import com.practicum.playlistmaker.domain.models.Track
 
 
 fun Context.dpToPx(dp: Int): Int {

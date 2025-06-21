@@ -27,12 +27,19 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.data.NetworkClient
+import com.practicum.playlistmaker.data.TrackRepositoryImpl
 import com.practicum.playlistmaker.ui.TrackAdapter
 import com.practicum.playlistmaker.data.dto.SearchHistory
+import com.practicum.playlistmaker.data.dto.SearchRequest
 import com.practicum.playlistmaker.data.dto.SearchResponse
-import com.practicum.playlistmaker.data.dto.Track
+import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.data.network.ITunesApi
+import com.practicum.playlistmaker.data.network.RetrofitNetworkClient
+import com.practicum.playlistmaker.domain.api.TrackInteractor
+import com.practicum.playlistmaker.domain.impl.TrackInteractorImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
@@ -60,7 +67,7 @@ class SearchActivity : AppCompatActivity() {
     private var isFromSearchQuery: Boolean = false
     private val searchQueryFlow = MutableStateFlow("")
     private lateinit var progressBar: ProgressBar
-    private var allTracks: List<Track> = listOf()
+    private lateinit var trackInteractor: TrackInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +76,9 @@ class SearchActivity : AppCompatActivity() {
         searchHistory = SearchHistory(getSharedPreferences("app_preferences", MODE_PRIVATE))
         initializeViews()
         setupRetrofit()
+
+        setupRetrofit()
+        trackInteractor = Creator.provideTrackInteractor()
 
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -90,7 +100,8 @@ class SearchActivity : AppCompatActivity() {
 
         searchInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                performSearch(searchText)
+                performSearch(searchInput.text.toString())
+                //performSearch(searchText)
                 true
             } else false
         }
@@ -138,11 +149,13 @@ class SearchActivity : AppCompatActivity() {
         searchQueryFlow
             .debounce(2000)
             .onEach { query ->
+                //if (this::trackInteractor.isInitialized) {
                 if (query.isNotEmpty()) {
                     performSearch(query)
                 } else {
                     resetUI()
                 }
+            //}
             }
             .launchIn(lifecycleScope)
 
@@ -214,52 +227,28 @@ class SearchActivity : AppCompatActivity() {
         lastSearchQuery = query
         progressBar.isVisible = true
 
-        iTunesApi.search(query).enqueue(object : Callback<SearchResponse> {
-            override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
-                progressBar.isVisible = false
+        trackInteractor.performSearch(query) { tracks, error ->
+            progressBar.isVisible = false
 
-                if (response.isSuccessful && response.body() != null) {
-                    val searchResponse = response.body()!!
-                    if (searchResponse.resultCount > 0) {
-                        val tracks = searchResponse.results.map {
-                            Track(
-                                trackName = it.trackName,
-                                artistName = it.artistName,
-                                trackTimeMillis = it.trackTimeMillis,
-                                artworkUrl100 = it.artworkUrl100,
-                                collectionName = it.collectionName,
-                                releaseDate = it.releaseDate,
-                                primaryGenreName = it.primaryGenreName,
-                                country = it.country,
-                                previewUrl = it.previewUrl
-                            )
-                        }
-
-                        val limitedTracks = tracks.take(11)
-                        trackAdapter.updateTracks(limitedTracks)
-
-                        trackRecyclerView.isVisible = true
-                        noResultsLayout.isVisible = false
-                        serverErrorLayout.isVisible = false
-                    } else {
-                        trackRecyclerView.isVisible = false
-                        noResultsLayout.isVisible = true
-                        serverErrorLayout.isVisible = false
-                    }
-                } else {
-                    trackRecyclerView.isVisible = false
-                    noResultsLayout.isVisible = false
-                    serverErrorLayout.isVisible = true
-                }
-            }
-
-            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                progressBar.isVisible = false
+            if (error != null) {
                 trackRecyclerView.isVisible = false
                 noResultsLayout.isVisible = false
                 serverErrorLayout.isVisible = true
+                return@performSearch
             }
-        })
+
+            if (tracks != null && tracks.isNotEmpty()) {
+                val limitedTracks = tracks.take(11)
+                trackAdapter.updateTracks(limitedTracks)
+                trackRecyclerView.isVisible = true
+                noResultsLayout.isVisible = false
+                serverErrorLayout.isVisible = false
+            } else {
+                trackRecyclerView.isVisible = false
+                noResultsLayout.isVisible = true
+                serverErrorLayout.isVisible = false
+            }
+        }
     }
 
     private fun resetUI() {

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.data.dto
+package com.practicum.playlistmaker.domain.models
 
 data class Track(
     val trackName: String,

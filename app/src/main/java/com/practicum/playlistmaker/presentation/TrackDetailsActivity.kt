@@ -14,7 +14,9 @@ import com.bumptech.glide.request.RequestOptions
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.api.TrackInteractor
 import java.util.Locale
 
 class TrackDetailsActivity : AppCompatActivity() {
@@ -25,10 +27,13 @@ class TrackDetailsActivity : AppCompatActivity() {
 
     private lateinit var playButton: ImageView
     private var isPlaying = false
+    private lateinit var trackInteractor: TrackInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_track_details)
+
+        trackInteractor = Creator.provideTrackInteractor()
 
         amountOfListeningTextView = findViewById(R.id.theAmountOfListening)
         playButton = findViewById(R.id.playButton)
@@ -105,6 +110,8 @@ class TrackDetailsActivity : AppCompatActivity() {
 
     private fun saveTrack() {
         // Реализуйте логику для сохранения трека
+        // Используем trackInteractor для сохранения трека
+        // trackInteractor.saveTrack
     }
 
     private fun playTrack(previewUrl: String?) {
@@ -191,5 +198,7 @@ class TrackDetailsActivity : AppCompatActivity() {
 
     private fun likeTrack() {
         // Реализуйте логику для лайка трека
+        // Используем trackInteractor для лайка трека
+        // trackInteractor.likeTrack
     }
 }

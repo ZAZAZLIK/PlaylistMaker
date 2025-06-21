@@ -8,7 +8,8 @@ import com.practicum.playlistmaker.domain.impl.TrackInteractorImpl
 
 object Creator {
     private fun getTrackRepository(): TrackRepository {
-        return TrackRepositoryImpl(RetrofitNetworkClient())
+        val iTunesApi = RetrofitNetworkClient.create()
+        return TrackRepositoryImpl(iTunesApi)
     }
 
     fun provideTrackInteractor(): TrackInteractor {
