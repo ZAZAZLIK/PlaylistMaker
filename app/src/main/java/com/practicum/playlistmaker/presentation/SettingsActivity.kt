@@ -10,12 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
+import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.data.PreferencesRepository
+import com.practicum.playlistmaker.domain.PreferencesUseCase
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var preferencesRepository: PreferencesRepository
+    private lateinit var preferencesUseCase: PreferencesUseCase
     private lateinit var backButton: ImageButton
     private lateinit var titleTextView: MaterialTextView
     private lateinit var themeSwitch: SwitchMaterial
@@ -33,7 +34,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        preferencesRepository = PreferencesRepository(this)
+        preferencesUseCase = Creator.providePreferencesUseCase(this)
 
         shareText = getString(R.string.share_the_app_name_text)
         supportEmail = getString(R.string.email)
@@ -52,12 +53,10 @@ class SettingsActivity : AppCompatActivity() {
         supportButton = findViewById(R.id.btn_support)
         termsButton = findViewById(R.id.btn_terms)
 
-
-        themeSwitch.isChecked = preferencesRepository.isDarkTheme()
+        themeSwitch.isChecked = preferencesUseCase.isDarkTheme()
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-
-            preferencesRepository.saveTheme(isChecked)
+            preferencesUseCase.saveTheme(isChecked)
             AppCompatDelegate.setDefaultNightMode(
                 if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
                 else AppCompatDelegate.MODE_NIGHT_NO

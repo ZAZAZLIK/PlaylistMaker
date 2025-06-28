@@ -91,4 +91,7 @@ class TrackAdapter(
             notifyItemRangeRemoved(newSize, oldSize - newSize)
         }
     }
+    fun getTracks(): List<Track> {
+        return tracks
+    }
 }

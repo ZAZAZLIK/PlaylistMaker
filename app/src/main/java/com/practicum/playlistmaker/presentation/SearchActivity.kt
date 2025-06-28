@@ -35,6 +35,7 @@ import com.practicum.playlistmaker.ui.TrackAdapter
 import com.practicum.playlistmaker.data.dto.SearchHistory
 import com.practicum.playlistmaker.data.dto.SearchRequest
 import com.practicum.playlistmaker.data.dto.SearchResponse
+import com.practicum.playlistmaker.data.dto.TrackDto
 import com.practicum.playlistmaker.domain.models.Track
 import com.practicum.playlistmaker.data.network.ITunesApi
 import com.practicum.playlistmaker.data.network.RetrofitNetworkClient
@@ -227,7 +228,8 @@ class SearchActivity : AppCompatActivity() {
         lastSearchQuery = query
         progressBar.isVisible = true
 
-        trackInteractor.performSearch(query) { tracks, error ->
+        val allFetchedTracks = trackAdapter.getTracks()
+        trackInteractor.performSearch(query, allFetchedTracks) { tracks, error ->
             progressBar.isVisible = false
 
             if (error != null) {
@@ -281,19 +283,19 @@ class SearchActivity : AppCompatActivity() {
         clearHistoryButton.visibility = if (searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
     }
 
-    private fun openTrackDetails(track: Track) {
+    private fun openTrackDetails(trackDto: Track) {
         isFromSearchQuery = true
         val intent = Intent(this, TrackDetailsActivity::class.java).apply {
-            putExtra("TRACK_NAME", track.trackName)
-            putExtra("ARTIST_NAME", track.artistName)
-            putExtra("TRACK_TIME", track.trackTimeMillis)
-            putExtra("ARTWORK_URL", track.artworkUrl100)
+            putExtra("TRACK_NAME", trackDto.trackName)
+            putExtra("ARTIST_NAME", trackDto.artistName)
+            putExtra("TRACK_TIME", trackDto.trackTimeMillis)
+            putExtra("ARTWORK_URL", trackDto.artworkUrl100)
 
-            putExtra("COLLECTION_NAME", track.collectionName ?: "Неизвестен")
-            putExtra("RELEASE_DATE", track.releaseDate ?: "Не указано")
-            putExtra("PRIMARY_GENRE_NAME", track.primaryGenreName ?: "Неизвестен")
-            putExtra("COUNTRY", track.country ?: "Неизвестно")
-            putExtra("PREVIEW_URL", track.previewUrl ?: "Неизвестно")
+            putExtra("COLLECTION_NAME", trackDto.collectionName ?: "Неизвестен")
+            putExtra("RELEASE_DATE", trackDto.releaseDate ?: "Не указано")
+            putExtra("PRIMARY_GENRE_NAME", trackDto.primaryGenreName ?: "Неизвестен")
+            putExtra("COUNTRY", trackDto.country ?: "Неизвестно")
+            putExtra("PREVIEW_URL", trackDto.previewUrl ?: "Неизвестно")
         }
         activityResultLauncher.launch(intent)
     }

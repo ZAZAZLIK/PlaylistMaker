@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.data.api
+package com.practicum.playlistmaker.domain.api
 
 interface PreferencesDataSource {
     fun saveTheme(isDarkTheme: Boolean)
