@@ -1,13 +1,18 @@
-package com.practicum.playlistmaker.domain
+package com.practicum.playlistmaker.domain.impl
 
-import com.practicum.playlistmaker.data.PreferencesRepository
+import com.practicum.playlistmaker.domain.PreferencesUseCase
+import com.practicum.playlistmaker.domain.IsDarkThemeUseCase
+import com.practicum.playlistmaker.domain.SaveThemeUseCase
 
-class PreferencesUseCaseImpl(private val preferencesRepository: PreferencesRepository) : PreferencesUseCase {
+class PreferencesUseCaseImpl(
+    private val isDarkThemeUseCase: IsDarkThemeUseCase,
+    private val saveThemeUseCase: SaveThemeUseCase
+) : PreferencesUseCase {
     override fun isDarkTheme(): Boolean {
-        return preferencesRepository.isDarkTheme()
+        return isDarkThemeUseCase()
     }
 
     override fun saveTheme(isDark: Boolean) {
-        preferencesRepository.saveTheme(isDark)
+        saveThemeUseCase(isDark)
     }
 }

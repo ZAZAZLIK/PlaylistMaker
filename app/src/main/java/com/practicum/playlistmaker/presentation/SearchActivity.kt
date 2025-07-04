@@ -76,9 +76,9 @@ class SearchActivity : AppCompatActivity() {
 
         searchHistory = SearchHistory(getSharedPreferences("app_preferences", MODE_PRIVATE))
         initializeViews()
-        setupRetrofit()
+        //setupRetrofit()
 
-        setupRetrofit()
+        //setupRetrofit()
         trackInteractor = Creator.provideTrackInteractor()
 
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -240,8 +240,9 @@ class SearchActivity : AppCompatActivity() {
             }
 
             if (tracks != null && tracks.isNotEmpty()) {
-                val limitedTracks = tracks.take(11)
-                trackAdapter.updateTracks(limitedTracks)
+                //val limitedTracks = tracks.take(11)
+                //trackAdapter.updateTracks(limitedTracks)
+                trackAdapter.updateTracks(tracks)
                 trackRecyclerView.isVisible = true
                 noResultsLayout.isVisible = false
                 serverErrorLayout.isVisible = false

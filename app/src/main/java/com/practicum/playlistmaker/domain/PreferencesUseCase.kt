@@ -1,6 +1,6 @@
 package com.practicum.playlistmaker.domain
 
 interface PreferencesUseCase {
+    fun saveTheme(isDarkTheme: Boolean)
     fun isDarkTheme(): Boolean
-    fun saveTheme(isDark: Boolean)
 }

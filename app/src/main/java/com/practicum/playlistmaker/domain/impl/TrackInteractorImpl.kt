@@ -11,8 +11,10 @@ class TrackInteractorImpl(private val trackRepository: TrackRepository) : TrackI
             if (error != null) {
                 callback(null, error)
             } else {
-                val limitedTracks = fetchedTracks?.take(11) ?: listOf()
-                callback(limitedTracks, null)
+                //val limitedTracks = fetchedTracks?.take(11) ?: listOf()
+                val allFetchedTracksList = fetchedTracks ?: listOf()
+                //callback(limitedTracks, null)
+                callback(allFetchedTracksList, null)
             }
         }
     }
