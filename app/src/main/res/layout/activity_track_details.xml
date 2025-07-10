@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/background_color">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
 
 <ImageButton
     android:id="@+id/button_back"
@@ -16,17 +21,26 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
 
-<ImageView
-    android:id="@+id/artworkImageView"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    app:layout_constraintDimensionRatio="1:1"
-    android:background="@drawable/rounded_corners"
-    android:layout_marginTop="@dimen/text_size_twenty_six"
-    app:layout_constraintTop_toBottomOf="@id/button_back"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginHorizontal="@dimen/twenty_four"/>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/artworkCardView"
+        android:layout_width="358dp"
+        android:layout_height="357dp"
+        android:layout_marginHorizontal="@dimen/twenty_four"
+        android:layout_marginTop="@dimen/text_size_twenty_six"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_back">
+
+    <ImageView
+        android:id="@+id/artworkImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    </androidx.cardview.widget.CardView>
 
 <TextView
     android:id="@+id/trackNameTextView"
@@ -34,7 +48,7 @@
     android:layout_height="@dimen/text_size_twenty_six"
     android:textSize="@dimen/text_size_twenty_two"
     android:textStyle="bold"
-    app:layout_constraintTop_toBottomOf="@id/artworkImageView"
+    app:layout_constraintTop_toBottomOf="@id/artworkCardView"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     android:layout_marginTop="@dimen/twenty_four"
@@ -248,4 +262,4 @@ android:layout_marginHorizontal="@dimen/twenty_four" >
     android:layout_marginEnd="@dimen/twenty_four"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
+</ScrollView>

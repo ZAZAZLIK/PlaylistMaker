@@ -1,6 +1,8 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.data.dto
 
-data class Track(
+import com.practicum.playlistmaker.domain.models.Track
+
+data class TrackDto(
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Long,
@@ -43,4 +45,3 @@ data class Track(
         return result
     }
 }
-
