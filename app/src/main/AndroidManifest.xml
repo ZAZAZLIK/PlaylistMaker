@@ -22,10 +22,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="31"
-        android:name=".presentation.App">
+        android:name=".main.ui.App">
 
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".main.ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,17 +33,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.SearchActivity"
+            android:name=".main.ui.SearchActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name=".presentation.MediaLibraryActivity"
+            android:name=".main.ui.MediaLibraryActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.SettingsActivity"
+            android:name=".main.ui.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".presentation.TrackDetailsActivity"/>
+            android:name=".main.ui.TrackDetailsActivity"/>
     </application>
 
 </manifest>
