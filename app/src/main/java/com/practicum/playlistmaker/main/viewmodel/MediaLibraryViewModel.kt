@@ -21,6 +21,7 @@ class MediaLibraryViewModel(private val trackRepository: TrackRepository) : View
                 _mediaData.postValue(tracks)
             } else {
                 // Обработка ошибки
+                _mediaData.postValue(emptyList()) // В случае ошибки возвращаем пустой список
             }
         }
     }

@@ -7,24 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.viewmodel.MediaLibraryViewModel
 import com.practicum.playlistmaker.main.viewmodel.MediaLibraryViewModelFactory
-import com.practicum.playlistmaker.player.data.TrackRepositoryImpl
-import com.practicum.playlistmaker.player.domain.api.TrackRepository
-import com.practicum.playlistmaker.search.data.network.ITunesApi
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.practicum.playlistmaker.utils.DependencyInjector
 
 class MediaLibraryActivity : AppCompatActivity() {
 
-    private lateinit var trackRepository: TrackRepository
-
-    private val viewModel: MediaLibraryViewModel by viewModels { MediaLibraryViewModelFactory(trackRepository) }
+    private val viewModel: MediaLibraryViewModel by viewModels { MediaLibraryViewModelFactory(DependencyInjector.trackRepository) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media_library)
-
-        val iTunesApi: ITunesApi = createITunesApi()
-        trackRepository = TrackRepositoryImpl(iTunesApi)
 
         viewModel.mediaData.observe(this) { mediaList ->
             // Обновить UI с использованием медиаданных
@@ -34,13 +25,5 @@ class MediaLibraryActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             finish()
         }
-    }
-
-    private fun createITunesApi(): ITunesApi {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://itunes.apple.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        return retrofit.create(ITunesApi::class.java)
     }
 }

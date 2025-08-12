@@ -74,6 +74,7 @@ class TrackAdapter(
 
         tracks.clear()
         tracks.addAll(newTracks)
+        notifyDataSetChanged()
 
         val oldSize = oldTracks.size
         val newSize = newTracks.size

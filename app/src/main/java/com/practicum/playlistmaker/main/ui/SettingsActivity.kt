@@ -8,15 +8,19 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.main.viewmodel.SettingsViewModel
+import com.practicum.playlistmaker.main.viewmodel.SettingsViewModelFactory
 import com.practicum.playlistmaker.player.domain.PreferencesUseCase
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var preferencesUseCase: PreferencesUseCase
+    private lateinit var viewModel: SettingsViewModel
     private lateinit var backButton: ImageButton
     private lateinit var titleTextView: MaterialTextView
     private lateinit var themeSwitch: SwitchMaterial
@@ -24,59 +28,70 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var supportButton: ImageView
     private lateinit var termsButton: ImageView
 
-    private lateinit var shareText: String
-    private lateinit var supportEmail: String
-    private lateinit var emailSubject: String
-    private lateinit var emailBody: String
-    private lateinit var userAgreementUrl: String
+    private var isUpdatingSwitch = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
         preferencesUseCase = Creator.providePreferencesUseCase(this)
+        viewModel = ViewModelProvider(this, SettingsViewModelFactory(preferencesUseCase)).get(SettingsViewModel::class.java)
 
-        shareText = getString(R.string.share_the_app_name_text)
-        supportEmail = getString(R.string.email)
-        emailSubject = getString(R.string.message)
-        emailBody = getString(R.string.thanks)
-        userAgreementUrl = getString(R.string.user_agreement_url)
+        initializeViews()
+        setupThemeSwitch()
+        observeViewModel()
+    }
 
+    private fun initializeViews() {
         backButton = findViewById(R.id.back_button)
         titleTextView = findViewById(R.id.title_text_view)
-        backButton.setOnClickListener {
-            finish()
-        }
-
         themeSwitch = findViewById(R.id.switch_theme)
         shareButton = findViewById(R.id.btn_share)
         supportButton = findViewById(R.id.btn_support)
         termsButton = findViewById(R.id.btn_terms)
 
+        backButton.setOnClickListener { finish() }
+        shareButton.setOnClickListener { shareApp() }
+        supportButton.setOnClickListener { writeToSupport() }
+        termsButton.setOnClickListener { openUserAgreement() }
+    }
+
+    private fun setupThemeSwitch() {
         themeSwitch.isChecked = preferencesUseCase.isDarkTheme()
 
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            preferencesUseCase.saveTheme(isChecked)
-            AppCompatDelegate.setDefaultNightMode(
-                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
-                else AppCompatDelegate.MODE_NIGHT_NO
-            )
-        }
-
-        shareButton.setOnClickListener {
-            shareApp()
-        }
-
-        supportButton.setOnClickListener {
-            writeToSupport()
-        }
-
-        termsButton.setOnClickListener {
-            openUserAgreement()
+            if (!isUpdatingSwitch) {
+                isUpdatingSwitch = true
+                updateTheme(isChecked)
+                isUpdatingSwitch = false
+            }
         }
     }
 
+    private fun observeViewModel() {
+        viewModel.isDarkTheme.observe(this) { isChecked ->
+            if (!isUpdatingSwitch) {
+                isUpdatingSwitch = true
+                themeSwitch.isChecked = isChecked
+                AppCompatDelegate.setDefaultNightMode(
+                    if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
+                    else AppCompatDelegate.MODE_NIGHT_NO
+                )
+                isUpdatingSwitch = false
+            }
+        }
+    }
+
+    private fun updateTheme(isDark: Boolean) {
+        preferencesUseCase.saveTheme(isDark)
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDark) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+    }
+
     private fun shareApp() {
+        val shareText = getString(R.string.share_the_app_name_text)
         val shareIntent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, shareText)
@@ -88,11 +103,11 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun writeToSupport() {
-        val subject = Uri.encode(emailSubject)
-        val body = Uri.encode(emailBody)
+        val subject = Uri.encode(getString(R.string.message))
+        val body = Uri.encode(getString(R.string.thanks))
+        val supportEmail = getString(R.string.email)
 
         val emailUri = Uri.parse("mailto:$supportEmail?subject=$subject&body=$body")
-
         val supportRequest = Intent(Intent.ACTION_SENDTO).apply {
             data = emailUri
         }
@@ -105,6 +120,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun openUserAgreement() {
+        val userAgreementUrl = getString(R.string.user_agreement_url)
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(userAgreementUrl))
         startActivity(browserIntent)
     }
