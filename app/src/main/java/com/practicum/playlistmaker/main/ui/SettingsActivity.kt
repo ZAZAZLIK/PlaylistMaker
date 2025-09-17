@@ -57,13 +57,9 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupThemeSwitch() {
-        themeSwitch.isChecked = preferencesUseCase.isDarkTheme()
-
         themeSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (!isUpdatingSwitch) {
-                isUpdatingSwitch = true
-                updateTheme(isChecked)
-                isUpdatingSwitch = false
+                viewModel.saveTheme(isChecked)
             }
         }
     }
@@ -80,14 +76,6 @@ class SettingsActivity : AppCompatActivity() {
                 isUpdatingSwitch = false
             }
         }
-    }
-
-    private fun updateTheme(isDark: Boolean) {
-        preferencesUseCase.saveTheme(isDark)
-        AppCompatDelegate.setDefaultNightMode(
-            if (isDark) AppCompatDelegate.MODE_NIGHT_YES
-            else AppCompatDelegate.MODE_NIGHT_NO
-        )
     }
 
     private fun shareApp() {

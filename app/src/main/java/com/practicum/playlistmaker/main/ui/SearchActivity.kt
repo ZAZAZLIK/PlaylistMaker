@@ -21,10 +21,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.domain.models.Track
-import com.practicum.playlistmaker.search.data.dto.SearchHistory
 import com.practicum.playlistmaker.main.viewmodel.SearchViewModel
 import com.practicum.playlistmaker.main.viewmodel.SearchViewModelFactory
-import com.practicum.playlistmaker.utils.DependencyInjector.trackInteractor
+import com.practicum.playlistmaker.creator.Creator
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchInput: EditText
@@ -42,10 +41,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
-    private var searchHistory: SearchHistory? = null
-
     private val viewModel: SearchViewModel by viewModels {
-        SearchViewModelFactory(trackInteractor, searchHistory ?: SearchHistory(getSharedPreferences("app_preferences", MODE_PRIVATE)))
+        SearchViewModelFactory(
+            Creator.provideTrackInteractor(),
+            Creator.provideSearchHistoryRepository(this)
+        )
     }
 
     private var isFromSearchQuery: Boolean = false
@@ -55,8 +55,6 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         initializeViews()
-
-        searchHistory = SearchHistory(getSharedPreferences("app_preferences", MODE_PRIVATE))
 
         viewModel.isHistoryVisible.observe(this) { isVisible ->
             if (isVisible) {
@@ -76,9 +74,6 @@ class SearchActivity : AppCompatActivity() {
         }
 
         viewModel.fetchHistory()
-        viewModel.historyState.observe(this, Observer {
-            updateHistoryUI()
-        })
 
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -121,9 +116,6 @@ class SearchActivity : AppCompatActivity() {
             updateServerErrorState(serverError)
         })
 
-        viewModel.historyState.observe(this, Observer {
-            updateHistoryUI()
-        })
 
         setupSearchFlow()
     }
@@ -132,9 +124,6 @@ class SearchActivity : AppCompatActivity() {
         searchInput.addTextChangedListener { text ->
             val searchText = text?.toString() ?: ""
             viewModel.setSearchText(searchText)
-            hideSearchHistory()
-            progressBar.isVisible = true
-            viewModel.searchTracks()
             buttonClear.isVisible = searchText.isNotEmpty()
         }
     }
@@ -157,7 +146,7 @@ class SearchActivity : AppCompatActivity() {
         trackRecyclerView.layoutManager = LinearLayoutManager(this)
         trackAdapter = TrackAdapter(mutableListOf()) { track ->
             openTrackDetails(track)
-            searchHistory?.addTrack(track)
+            viewModel.onTrackClicked(track)
         }
         trackRecyclerView.adapter = trackAdapter
         progressBar = findViewById(R.id.progress_bar)
@@ -168,8 +157,7 @@ class SearchActivity : AppCompatActivity() {
         trackHistoryRecyclerView.layoutManager = LinearLayoutManager(this)
         historyAdapter = TrackAdapter(mutableListOf()) { track ->
             openTrackDetails(track)
-            searchHistory?.addTrack(track)
-            updateHistoryUI()
+            viewModel.onTrackClicked(track)
         }
         trackHistoryRecyclerView.adapter = historyAdapter
         backButton.setOnClickListener { finish() }

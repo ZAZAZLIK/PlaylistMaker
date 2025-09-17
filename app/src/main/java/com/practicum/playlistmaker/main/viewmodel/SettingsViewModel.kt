@@ -7,10 +7,11 @@ import com.practicum.playlistmaker.player.domain.PreferencesUseCase
 
 class SettingsViewModel(private val preferencesUseCase: PreferencesUseCase) : ViewModel() {
 
-    val isDarkTheme: LiveData<Boolean> = MutableLiveData(preferencesUseCase.isDarkTheme())
+    private val _isDarkTheme = MutableLiveData(preferencesUseCase.isDarkTheme())
+    val isDarkTheme: LiveData<Boolean> = _isDarkTheme
 
     fun saveTheme(isDark: Boolean) {
         preferencesUseCase.saveTheme(isDark)
-        (isDarkTheme as MutableLiveData).value = isDark
+        _isDarkTheme.value = isDark
     }
 }

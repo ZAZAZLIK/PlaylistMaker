@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.viewmodel.MainViewModel
 import com.practicum.playlistmaker.main.viewmodel.MainViewModelFactory
-import com.practicum.playlistmaker.utils.DependencyInjector
+import com.practicum.playlistmaker.creator.Creator
 
 class MainActivity : AppCompatActivity() {
 
@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val factory = MainViewModelFactory(DependencyInjector.trackRepository)
+        val factory = MainViewModelFactory(Creator.provideTrackInteractor())
         viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
 
         val startButton: Button = findViewById(R.id.button_start)

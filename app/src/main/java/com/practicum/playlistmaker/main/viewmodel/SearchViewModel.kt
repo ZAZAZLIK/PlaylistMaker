@@ -5,17 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.player.domain.api.TrackInteractor
+import com.practicum.playlistmaker.player.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.player.domain.models.Track
-import com.practicum.playlistmaker.search.data.dto.SearchHistory
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val trackInteractor: TrackInteractor,
-    private val searchHistory: SearchHistory
+    private val searchHistoryRepository: SearchHistoryRepository
 ) : ViewModel() {
-
-    private val _historyState = MutableLiveData<Boolean>()
-    val historyState: LiveData<Boolean> get() = _historyState
 
     private val _tracks = MutableLiveData<List<Track>>(emptyList())
     val tracks: LiveData<List<Track>> get() = _tracks
@@ -34,6 +31,8 @@ class SearchViewModel(
 
     fun setSearchText(query: String) {
         _searchText.value = query
+        // При вводе текста скрываем историю
+        _isHistoryVisible.value = query.isBlank() && (history.value?.isNotEmpty() == true)
         if (query.isNotEmpty()) {
             performSearch(query)
         } else {
@@ -51,7 +50,9 @@ class SearchViewModel(
     }
 
     fun clearHistory() {
-        searchHistory.clearHistory()
+        searchHistoryRepository.clearHistory()
+        _history.value = emptyList()
+        _isHistoryVisible.value = false
     }
 
     private val _isHistoryVisible = MutableLiveData<Boolean>(false)
@@ -62,16 +63,19 @@ class SearchViewModel(
 
     fun fetchHistory() {
         viewModelScope.launch {
-            val fetchedHistory = searchHistory.getHistory()
+            val fetchedHistory = searchHistoryRepository.getHistory()
             _isHistoryVisible.value = fetchedHistory.isNotEmpty()
             _history.value = fetchedHistory
         }
     }
 
+    fun onTrackClicked(track: Track) {
+        searchHistoryRepository.addTrack(track)
+    }
+
     private fun performSearch(query: String) {
         _isLoading.value = true
         viewModelScope.launch {
-            fetchHistory()
             trackInteractor.performSearch(query, _history.value ?: emptyList()) { tracks, error ->
                 handleSearchResults(tracks, error)
             }
@@ -100,7 +104,7 @@ class SearchViewModel(
     }
 
     fun getHistory(): List<Track> {
-        return searchHistory.getHistory()
+        return searchHistoryRepository.getHistory()
     }
 
     private fun resetUI() {
@@ -112,20 +116,7 @@ class SearchViewModel(
     fun searchTracks() {
         _searchText.value?.let { query ->
             if (query.isNotBlank()) {
-                _isLoading.value = true
-
-                viewModelScope.launch {
-                    trackInteractor.performSearch(query, _history.value ?: emptyList()) { tracksList, error ->
-                        _isLoading.postValue(false)
-
-                        if (error != null || tracksList.isNullOrEmpty()) {
-                            _noResults.postValue(true)
-                        } else {
-                            _noResults.postValue(false)
-                            _tracks.postValue(tracksList ?: emptyList())
-                        }
-                    }
-                }
+                performSearch(query)
             } else {
                 _tracks.value = emptyList()
             }

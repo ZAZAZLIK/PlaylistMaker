@@ -18,6 +18,10 @@ class TrackInteractorImpl(private val trackRepository: TrackRepository) : TrackI
         }
     }
 
+    override fun getMediaTracks(callback: (List<Track>?, Throwable?) -> Unit) {
+        trackRepository.getMediaTracks(callback)
+    }
+
     override fun getData(): SomeDataType {
         return SomeDataType(someProperty = "значение")
     }

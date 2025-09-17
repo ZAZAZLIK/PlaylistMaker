@@ -14,5 +14,6 @@ interface TrackInteractor {
             callback(null, e)
         }
     }
+    fun getMediaTracks(callback: (List<Track>?, Throwable?) -> Unit)
     fun getData(): SomeDataType
 }

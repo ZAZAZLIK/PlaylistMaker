@@ -7,11 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.viewmodel.MediaLibraryViewModel
 import com.practicum.playlistmaker.main.viewmodel.MediaLibraryViewModelFactory
-import com.practicum.playlistmaker.utils.DependencyInjector
+import com.practicum.playlistmaker.creator.Creator
 
 class MediaLibraryActivity : AppCompatActivity() {
 
-    private val viewModel: MediaLibraryViewModel by viewModels { MediaLibraryViewModelFactory(DependencyInjector.trackRepository) }
+    private val viewModel: MediaLibraryViewModel by viewModels { MediaLibraryViewModelFactory(Creator.provideTrackInteractor()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
