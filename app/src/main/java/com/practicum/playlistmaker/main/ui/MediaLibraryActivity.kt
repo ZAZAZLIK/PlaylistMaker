@@ -2,16 +2,14 @@ package com.practicum.playlistmaker.main.ui
 
 import android.os.Bundle
 import android.widget.Button
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.viewmodel.MediaLibraryViewModel
-import com.practicum.playlistmaker.main.viewmodel.MediaLibraryViewModelFactory
-import com.practicum.playlistmaker.creator.Creator
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MediaLibraryActivity : AppCompatActivity() {
 
-    private val viewModel: MediaLibraryViewModel by viewModels { MediaLibraryViewModelFactory(Creator.provideTrackInteractor()) }
+    private val viewModel: MediaLibraryViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

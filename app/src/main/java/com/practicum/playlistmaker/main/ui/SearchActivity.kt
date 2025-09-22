@@ -12,7 +12,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -22,8 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.main.viewmodel.SearchViewModel
-import com.practicum.playlistmaker.main.viewmodel.SearchViewModelFactory
-import com.practicum.playlistmaker.creator.Creator
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchInput: EditText
@@ -41,12 +39,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
-    private val viewModel: SearchViewModel by viewModels {
-        SearchViewModelFactory(
-            Creator.provideTrackInteractor(),
-            Creator.provideSearchHistoryRepository(this)
-        )
-    }
+    private val viewModel: SearchViewModel by viewModel()
 
     private var isFromSearchQuery: Boolean = false
 

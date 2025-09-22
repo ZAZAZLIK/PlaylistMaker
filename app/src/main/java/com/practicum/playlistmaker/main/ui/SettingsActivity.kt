@@ -8,19 +8,15 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.viewmodel.SettingsViewModel
-import com.practicum.playlistmaker.main.viewmodel.SettingsViewModelFactory
-import com.practicum.playlistmaker.player.domain.PreferencesUseCase
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var preferencesUseCase: PreferencesUseCase
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
     private lateinit var backButton: ImageButton
     private lateinit var titleTextView: MaterialTextView
     private lateinit var themeSwitch: SwitchMaterial
@@ -34,8 +30,6 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        preferencesUseCase = Creator.providePreferencesUseCase(this)
-        viewModel = ViewModelProvider(this, SettingsViewModelFactory(preferencesUseCase)).get(SettingsViewModel::class.java)
 
         initializeViews()
         setupThemeSwitch()
