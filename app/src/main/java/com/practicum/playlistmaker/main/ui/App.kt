@@ -4,9 +4,10 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.practicum.playlistmaker.di.appModule
 import com.practicum.playlistmaker.player.domain.PreferencesUseCase
-import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import org.koin.core.context.GlobalContext
+import org.koin.java.KoinJavaComponent.getKoin
 
 class App : Application() {
 
@@ -19,11 +20,12 @@ class App : Application() {
         }
 
         // Получаем PreferencesUseCase после инициализации Koin
-        val preferencesUseCase: PreferencesUseCase = org.koin.core.context.GlobalContext.get().get()
+        val preferencesUseCase: PreferencesUseCase = getKoin().get()
 
         if (preferencesUseCase.isDarkTheme()) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
+    }
 }

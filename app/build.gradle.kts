@@ -36,48 +36,41 @@ android {
 }
 
 dependencies {
-    // AndroidX Core
+
+    // AndroidX core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    // Material Design (только одна версия)
+    // Material
     implementation(libs.material)
 
-    // Testing
+    // UI widgets
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    // Glide (runtime only; no annotation processor)
+    implementation("com.github.bumptech.glide:glide:4.14.2")
+
+    // Networking
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+
+    // Lifecycle
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
+
+    // Koin (androidx-viewmodel artifact не нужен на Koin 3.x)
+    implementation(libs.koin.android)
+
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // Glide для загрузки изображений
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
-
-    // RecyclerView
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
-
-    // CircleImageView
-    implementation("de.hdodenhof:circleimageview:3.1.0")
-
-    // Retrofit & Networking
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-    // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
-    // Lifecycle
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
-    implementation("androidx.activity:activity-ktx:1.8.2")
-
-    // Gson
-    implementation("com.google.code.gson:gson:2.10.1")
-
-    // Koin
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.viewmodel)
 }
