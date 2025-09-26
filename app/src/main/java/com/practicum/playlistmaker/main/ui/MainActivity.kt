@@ -4,22 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.viewmodel.MainViewModel
-import com.practicum.playlistmaker.main.viewmodel.MainViewModelFactory
-import com.practicum.playlistmaker.creator.Creator
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val factory = MainViewModelFactory(Creator.provideTrackInteractor())
-        viewModel = ViewModelProvider(this, factory).get(MainViewModel::class.java)
 
         val startButton: Button = findViewById(R.id.button_start)
         val mediaButton: Button = findViewById(R.id.button_media)

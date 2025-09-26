@@ -14,9 +14,9 @@ import com.bumptech.glide.request.RequestOptions
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.domain.api.TrackInteractor
+import org.koin.android.ext.android.inject
 import java.util.Locale
 
 class TrackDetailsActivity : AppCompatActivity() {
@@ -27,13 +27,11 @@ class TrackDetailsActivity : AppCompatActivity() {
 
     private lateinit var playButton: ImageView
     private var isPlaying = false
-    private lateinit var trackInteractor: TrackInteractor
+    private val trackInteractor: TrackInteractor by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_track_details)
-
-        trackInteractor = Creator.provideTrackInteractor()
 
         amountOfListeningTextView = findViewById(R.id.theAmountOfListening)
         playButton = findViewById(R.id.playButton)

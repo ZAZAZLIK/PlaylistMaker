@@ -1,0 +1,16 @@
+package com.practicum.playlistmaker.di
+
+import com.practicum.playlistmaker.main.viewmodel.MainViewModel
+import com.practicum.playlistmaker.main.viewmodel.MediaLibraryViewModel
+import com.practicum.playlistmaker.main.viewmodel.SearchViewModel
+import com.practicum.playlistmaker.main.viewmodel.SettingsViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
+
+val presentationModule = module {
+    
+    viewModel { MainViewModel(get()) }
+    viewModel { SearchViewModel(get(), get()) }
+    viewModel { MediaLibraryViewModel(get()) }
+    viewModel { SettingsViewModel(get()) }
+}

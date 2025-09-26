@@ -1,11 +1,11 @@
 package com.practicum.playlistmaker.player.domain
 
-import com.practicum.playlistmaker.player.data.PreferencesRepository
+import com.practicum.playlistmaker.player.domain.api.PreferencesDataSource
 
-class SaveThemeInteractor(private val preferencesRepository: PreferencesRepository) :
+class SaveThemeInteractor(private val preferencesDataSource: PreferencesDataSource) :
     SaveThemeUseCase {
 
-    override fun invoke(isDarkTheme: Boolean) {
-        preferencesRepository.saveTheme(isDarkTheme)
+    override fun invoke(isDark: Boolean) {
+        preferencesDataSource.saveTheme(isDark)
     }
 }
