@@ -2,6 +2,7 @@ package com.practicum.playlistmaker.main.ui
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.viewpager2.widget.ViewPager2
 import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.R
@@ -27,14 +28,14 @@ class MediaLibraryActivity : AppCompatActivity() {
         viewPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int = 2
             override fun createFragment(position: Int): Fragment =
-                if (position == 0) PlaylistsFragment() else FavoritesFragment()
+                if (position == 0) FavoritesFragment.newInstance() else PlaylistsFragment.newInstance()
         }
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = if (position == 0) getString(R.string.playlists) else getString(R.string.favorites)
+            tab.text = if (position == 0) getString(R.string.favorites) else getString(R.string.playlists)
         }.attach()
 
-        val backButton: Button = findViewById(R.id.button_back)
+        val backButton: ImageButton = findViewById(R.id.button_back)
         backButton.setOnClickListener {
             finish()
         }
