@@ -4,20 +4,38 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/tvStubPlaylists"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/stub_playlists" />
+    android:padding="24dp">
 
     <Button
         android:id="@+id/btnCreatePlaylist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/create_playlist" />
+        android:text="@string/create_playlist"
+        android:textSize="18sp"
+        android:textColor="@color/background_color"
+        android:fontFamily="@font/ys_text_medium"
+        android:backgroundTint="@color/textColorPrimary"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:minHeight="48dp"
+        android:layout_marginBottom="24dp"
+        />
+
+    <ImageView
+        android:id="@+id/image_stub_playlists"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/mode" />
+
+    <TextView
+        android:id="@+id/tvStubPlaylists"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/stub_playlists"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:textColor="@color/textColorPrimary" />
 
 </LinearLayout>
 
