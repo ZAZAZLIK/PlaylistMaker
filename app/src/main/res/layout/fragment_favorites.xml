@@ -3,20 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+    android:padding="24dp"
+    android:gravity="center_horizontal"
+    android:background="@color/background_color">
 
     <ImageView
         android:id="@+id/image_stub_favorites"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/mode" />
+        android:src="@drawable/mode"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="24dp" />
 
     <TextView
         android:id="@+id/tvStubFavorites"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         android:text="@string/stub_favorites"
         android:textSize="20sp"
         android:textColor="@color/textColorPrimary" />

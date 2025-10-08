@@ -2,23 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp">
+    android:gravity="top|center_horizontal"
+    android:padding="16dp"
+    android:background="@color/background_color">
 
     <Button
         android:id="@+id/btnCreatePlaylist"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:text="@string/create_playlist"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:textColor="@color/background_color"
         android:fontFamily="@font/ys_text_medium"
-        android:backgroundTint="@color/textColorPrimary"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:minHeight="48dp"
-        android:layout_marginBottom="24dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:cornerRadius="@dimen/fifty_four"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:stateListAnimator="@null"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/the_color_of_the_refresh_button"
+
         />
 
     <ImageView
@@ -31,9 +37,9 @@
         android:id="@+id/tvStubPlaylists"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:text="@string/stub_playlists"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:gravity="center"
         android:textColor="@color/textColorPrimary" />
 
