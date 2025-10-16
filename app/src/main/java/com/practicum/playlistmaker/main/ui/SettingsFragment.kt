@@ -3,19 +3,23 @@ package com.practicum.playlistmaker.main.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.Fragment
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.viewmodel.SettingsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsFragment : Fragment() {
 
     private val viewModel: SettingsViewModel by viewModel()
+
     private lateinit var titleTextView: MaterialTextView
     private lateinit var themeSwitch: SwitchMaterial
     private lateinit var shareButton: ImageView
@@ -24,21 +28,27 @@ class SettingsActivity : AppCompatActivity() {
 
     private var isUpdatingSwitch = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return inflater.inflate(R.layout.fragment_settings, container, false)
+    }
 
-        initializeViews()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initializeViews(view)
         setupThemeSwitch()
         observeViewModel()
     }
 
-    private fun initializeViews() {
-        titleTextView = findViewById(R.id.title_text_view)
-        themeSwitch = findViewById(R.id.switch_theme)
-        shareButton = findViewById(R.id.btn_share)
-        supportButton = findViewById(R.id.btn_support)
-        termsButton = findViewById(R.id.btn_terms)
+    private fun initializeViews(view: View) {
+        titleTextView = view.findViewById(R.id.title_text_view)
+        themeSwitch = view.findViewById(R.id.switch_theme)
+        shareButton = view.findViewById(R.id.btn_share)
+        supportButton = view.findViewById(R.id.btn_support)
+        termsButton = view.findViewById(R.id.btn_terms)
 
         shareButton.setOnClickListener { shareApp() }
         supportButton.setOnClickListener { writeToSupport() }
@@ -54,7 +64,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.isDarkTheme.observe(this) { isChecked ->
+        viewModel.isDarkTheme.observe(viewLifecycleOwner) { isChecked ->
             if (!isUpdatingSwitch) {
                 isUpdatingSwitch = true
                 themeSwitch.isChecked = isChecked
@@ -74,7 +84,6 @@ class SettingsActivity : AppCompatActivity() {
             putExtra(Intent.EXTRA_TEXT, shareText)
             type = "text/plain"
         }
-
         val chooser = Intent.createChooser(shareIntent, null)
         startActivity(chooser)
     }
@@ -83,16 +92,12 @@ class SettingsActivity : AppCompatActivity() {
         val subject = Uri.encode(getString(R.string.message))
         val body = Uri.encode(getString(R.string.thanks))
         val supportEmail = getString(R.string.email)
-
         val emailUri = Uri.parse("mailto:$supportEmail?subject=$subject&body=$body")
-        val supportRequest = Intent(Intent.ACTION_SENDTO).apply {
-            data = emailUri
-        }
-
-        if (supportRequest.resolveActivity(packageManager) != null) {
+        val supportRequest = Intent(Intent.ACTION_SENDTO).apply { data = emailUri }
+        if (supportRequest.resolveActivity(requireContext().packageManager) != null) {
             startActivity(supportRequest)
         } else {
-            Toast.makeText(this, "Нет email-клиента для отправки письма", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Нет email-клиента для отправки письма", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -102,3 +107,5 @@ class SettingsActivity : AppCompatActivity() {
         startActivity(browserIntent)
     }
 }
+
+

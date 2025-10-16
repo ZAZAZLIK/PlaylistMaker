@@ -35,7 +35,7 @@
         <activity
             android:name=".main.ui.SearchActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".main.ui.MediaLibraryActivity"
             android:exported="false" />
