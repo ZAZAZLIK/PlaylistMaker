@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<include xmlns:android="http://schemas.android.com/apk/res/android"
-    layout="@layout/activity_media_library" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_color">
+
+    <!-- Заголовок без кнопки Назад для BottomNavigation -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title_text_view"
+        android:text="@string/music_name"
+        android:padding="@dimen/twelve"
+        style="@style/CommonTextStyle"
+        android:textSize="@dimen/text_size_twenty_two"
+        android:textColor="@color/textColorPrimary"/>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicatorFullWidth="false"
+        app:tabIndicatorHeight="2dp"
+        app:tabIndicatorColor="@color/textColorPrimary"
+        app:tabTextColor="@color/textColorPrimary"
+        app:tabSelectedTextColor="@color/textColorPrimary" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/background_color" />
+
+</LinearLayout>
 
 

@@ -1,5 +1,267 @@
 <?xml version="1.0" encoding="utf-8"?>
-<include xmlns:android="http://schemas.android.com/apk/res/android"
-    layout="@layout/activity_track_details" />
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+<ImageButton
+    android:id="@+id/button_back"
+    android:layout_width="@dimen/forty_eight"
+    android:layout_height="@dimen/forty_eight"
+    android:src="@drawable/baseline_arrow_back_24"
+    android:contentDescription="@string/back_name"
+    android:background="@android:color/transparent"
+    app:tint="@color/color_text"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/artworkCardView"
+        android:layout_width="358dp"
+        android:layout_height="357dp"
+        android:layout_marginHorizontal="@dimen/twenty_four"
+        android:layout_marginTop="@dimen/text_size_twenty_six"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_back">
+
+    <ImageView
+        android:id="@+id/artworkImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    </androidx.cardview.widget.CardView>
+
+<TextView
+    android:id="@+id/trackNameTextView"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/text_size_twenty_six"
+    android:textSize="@dimen/text_size_twenty_two"
+    android:textStyle="bold"
+    app:layout_constraintTop_toBottomOf="@id/artworkCardView"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="@dimen/twenty_four"
+    android:layout_marginHorizontal="@dimen/twenty_four"
+    android:textColor="@color/color_text"/>
+
+<TextView
+    android:id="@+id/artistNameTextView"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/text_size_normal"
+    app:layout_constraintTop_toBottomOf="@id/trackNameTextView"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="@dimen/twelve"
+    android:layout_marginHorizontal="@dimen/twenty_four"
+    android:textColor="@color/color_text"/>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+android:layout_width="match_parent"
+android:layout_height="0dp"
+android:layout_marginTop="@dimen/thirty"
+app:layout_constraintTop_toBottomOf="@+id/artistNameTextView"
+android:layout_marginHorizontal="@dimen/twenty_four" >
+
+<ImageView
+    android:id="@+id/saveTrackImageView"
+    android:layout_width="51dp"
+    android:layout_height="51dp"
+    android:src="@drawable/baseline_queue_24"
+    android:background="@drawable/circle_small"
+    app:tint="@android:color/white"
+    android:contentDescription="@string/save_track"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:scaleType="centerInside" />
+
+<ImageView
+    android:id="@+id/playButton"
+    android:layout_width="83.33dp"
+    android:layout_height="83.33dp"
+    android:src="@drawable/baseline_play_arrow_24"
+    android:background="@drawable/circle_large"
+    android:contentDescription="@string/play"
+    app:layout_constraintStart_toEndOf="@+id/saveTrackImageView"
+    app:layout_constraintEnd_toStartOf="@+id/likeTrackImageView"
+    app:layout_constraintTop_toTopOf="parent"
+    android:layout_marginTop="@dimen/padding_medium"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:layout_marginBottom="@dimen/padding_medium"/>
+
+<ImageView
+    android:id="@+id/likeTrackImageView"
+    android:layout_width="51dp"
+    android:layout_height="51dp"
+    android:src="@drawable/baseline_favorite_border_24"
+    android:background="@drawable/circle_small"
+    app:tint="@android:color/white"
+    android:contentDescription="@string/like_track"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:scaleType="centerInside"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+<TextView
+    android:id="@+id/theAmountOfListening"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/artistNameTextView"
+    android:layout_marginTop="132dp"
+    android:textColor="@color/color_text"
+    android:contentDescription="@string/time_to_lose"
+    android:layout_marginHorizontal="0dp"
+    android:text="0:00"
+    android:gravity="center"
+    android:textSize="14sp"
+    android:visibility="visible"
+    android:paddingStart="40dp"
+    android:paddingEnd="40dp"/>
+
+<TextView
+    android:id="@+id/trackTimeLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/track_duration"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/artistNameTextView"
+    android:layout_marginTop="189dp"
+    android:layout_marginStart="@dimen/twenty_four"/>
+
+<TextView
+    android:id="@+id/trackTimeValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/track_duration"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/artistNameTextView"
+    android:layout_marginTop="189dp"
+    android:layout_marginEnd="@dimen/twenty_four"/>
+
+<TextView
+    android:id="@+id/albumLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/album"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/trackTimeLabel"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginStart="@dimen/twenty_four"/>
+
+<TextView
+    android:id="@+id/albumValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/album"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/trackTimeValue"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginEnd="@dimen/twenty_four"
+    android:maxWidth="235dp"
+    android:singleLine="true"
+    android:ellipsize="end"/>
+
+<TextView
+    android:id="@+id/yearLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/year"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/albumLabel"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginStart="@dimen/twenty_four"/>
+
+<TextView
+    android:id="@+id/yearValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/year"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/albumValue"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginEnd="@dimen/twenty_four"/>
+
+<TextView
+    android:id="@+id/genreLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/genre"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/yearLabel"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginStart="@dimen/twenty_four"/>
+
+<TextView
+    android:id="@+id/genreValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/genre"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/yearValue"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginEnd="@dimen/twenty_four"/>
+
+<TextView
+    android:id="@+id/countryLabel"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/country"
+    android:textColor="@color/gray"
+    android:textSize="@dimen/thirteen"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/genreLabel"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginStart="@dimen/twenty_four"/>
+
+<TextView
+    android:id="@+id/countryValue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textColor="@color/color_text"
+    android:textAlignment="viewEnd"
+    android:textSize="@dimen/thirteen"
+    android:contentDescription="@string/country"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/genreValue"
+    android:layout_marginTop="@dimen/eighteen"
+    android:layout_marginEnd="@dimen/twenty_four"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
 
 

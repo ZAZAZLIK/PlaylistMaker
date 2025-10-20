@@ -1,5 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<include xmlns:android="http://schemas.android.com/apk/res/android"
-    layout="@layout/activity_settings" />
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    android:orientation="vertical">
+
+    <!-- Верхняя панель без кнопки Назад для BottomNavigation -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title_text_view"
+        android:text="@string/settings_name"
+        android:padding="@dimen/twelve"
+        style="@style/CommonTextStyle"
+        android:textSize="@dimen/text_size_twenty_two" />
+
+    <LinearLayout
+        style="@style/CommonTextStyle" >
+
+        <TextView
+            android:text="@string/dark_theme_name"
+            style="@style/CommonTextStyle"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/padding_large" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_theme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="@dimen/forty_eight"
+            android:minHeight="@dimen/fifty_six"
+            app:thumbTint="@color/switch_thumb_color"
+            app:trackTint="@color/switch_track_color"
+            android:contentDescription="@string/switch_theme_description"
+            android:paddingRight="@dimen/padding_large" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/CommonTextStyle" >
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/CommonTextStyle"
+            android:text="@string/share_the_app_name"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/padding_large"/>
+
+        <ImageView
+            android:id="@+id/btn_share"
+            style="@style/CommonTextStyle"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/nineteen"
+            android:src="@drawable/baseline_share_24"
+            app:tint="@color/color_icon" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/CommonTextStyle" >
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/CommonTextStyle"
+            android:text="@string/write_to_support_name"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/padding_large"/>
+
+        <ImageView
+            android:id="@+id/btn_support"
+            style="@style/CommonTextStyle"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/nineteen"
+            android:src="@drawable/baseline_support_agent_24"
+            app:tint="@color/color_icon" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/CommonTextStyle" >
+
+        <com.google.android.material.textview.MaterialTextView
+            style="@style/CommonTextStyle"
+            android:text="@string/user_agreement_name"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/padding_large"/>
+
+        <ImageView
+            android:id="@+id/btn_terms"
+            style="@style/CommonTextStyle"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/nineteen"
+            android:src="@drawable/baseline_arrow_forward_ios_24"
+            app:tint="@color/color_icon" />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>
 
 
