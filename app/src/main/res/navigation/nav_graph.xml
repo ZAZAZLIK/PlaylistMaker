@@ -11,17 +11,17 @@
 
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.practicum.playlistmaker.main.ui.SearchFragment"
+        android:name="com.practicum.playlistmaker.search.presentation.SearchFragment"
         android:label="@string/search_name" />
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.practicum.playlistmaker.main.ui.SettingsFragment"
+        android:name="com.practicum.playlistmaker.settings.presentation.SettingsFragment"
         android:label="@string/settings_name" />
 
     <fragment
         android:id="@+id/trackDetailsFragment"
-        android:name="com.practicum.playlistmaker.main.ui.TrackDetailsFragment"
+        android:name="com.practicum.playlistmaker.player.presentation.TrackDetailsFragment"
         android:label="@string/track_duration" />
 
 </navigation>

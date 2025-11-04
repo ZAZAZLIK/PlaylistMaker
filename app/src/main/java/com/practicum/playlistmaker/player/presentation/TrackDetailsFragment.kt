@@ -1,31 +1,23 @@
-package com.practicum.playlistmaker.main.ui
+package com.practicum.playlistmaker.player.presentation
 
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.player.domain.api.TrackInteractor
-import org.koin.android.ext.android.inject
 import java.util.Locale
-import android.os.Handler
-import android.os.Looper
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TrackDetailsFragment : Fragment() {
-    private var mediaPlayer: MediaPlayer? = null
     private lateinit var amountOfListeningTextView: TextView
-    private val handler = Handler(Looper.getMainLooper())
     private lateinit var playButton: ImageView
     private var isPlaying = false
-    private val trackInteractor: TrackInteractor by inject()
+    private val viewModel: TrackDetailsViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,7 +36,7 @@ class TrackDetailsFragment : Fragment() {
         val previewUrl = arguments?.getString("PREVIEW_URL")
 
         playButton.setOnClickListener {
-            if (isPlaying) pauseTrack() else playTrack(previewUrl)
+            if (isPlaying) viewModel.pause() else viewModel.play(previewUrl)
         }
 
         val likeTrackImageView: ImageView = view.findViewById(R.id.likeTrackImageView)
@@ -80,70 +72,20 @@ class TrackDetailsFragment : Fragment() {
 
         Glide.with(view)
             .load(artworkUrl)
-            .apply(RequestOptions().placeholder(R.drawable.placeholder).centerCrop())
+            .apply(RequestOptions().placeholder(R.drawable.placeholder_ma).centerCrop())
             .into(artworkImageView)
+
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            isPlaying = state.isPlaying
+            amountOfListeningTextView.text = String.format(Locale.getDefault(), "%02d:%02d", state.positionSec / 60, state.positionSec % 60)
+            updatePlayButton()
+        }
     }
 
     private fun formatTrackTime(trackTimeMillis: Long): String {
         val minutes = (trackTimeMillis / 1000 / 60).toInt()
         val seconds = (trackTimeMillis / 1000 % 60).toString().padStart(2, '0')
         return "$minutes:$seconds"
-    }
-
-    private fun playTrack(previewUrl: String?) {
-        if (!previewUrl.isNullOrEmpty()) {
-            try {
-                mediaPlayer?.release()
-                mediaPlayer = MediaPlayer().apply {
-                    setDataSource(previewUrl)
-                    prepare()
-                    start()
-                    setOnCompletionListener { handlePlaybackCompletion() }
-                }
-                isPlaying = true
-                updateListeningTime()
-                updatePlayButton()
-            } catch (e: Exception) {
-                Log.e("TrackDetailsFragment", "Error playing track: ${e.message}", e)
-            }
-        } else {
-            Toast.makeText(requireContext(), "Не удалось воспроизвести трек. Попробуйте еще раз.", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun handlePlaybackCompletion() {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
-        isPlaying = false
-        amountOfListeningTextView.text = "0:00"
-        handler.removeCallbacksAndMessages(null)
-        updatePlayButton()
-    }
-
-    private fun pauseTrack() {
-        mediaPlayer?.pause()
-        isPlaying = false
-        updatePlayButton()
-    }
-
-    private fun updateListeningTime() {
-        val runnable = object : Runnable {
-            override fun run() {
-                mediaPlayer?.let {
-                    if (it.isPlaying) {
-                        val currentPosition = it.currentPosition / 1000
-                        val minutes = currentPosition / 60
-                        val seconds = currentPosition % 60
-                        amountOfListeningTextView.text = String.format(
-                            Locale.getDefault(), "%02d:%02d", minutes, seconds
-                        )
-                        handler.postDelayed(this, 1000)
-                    }
-                }
-            }
-        }
-        handler.post(runnable)
     }
 
     private fun updatePlayButton() {
@@ -154,16 +96,7 @@ class TrackDetailsFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        mediaPlayer?.release()
-        mediaPlayer = null
-        handler.removeCallbacksAndMessages(null)
-    }
-
-    private fun likeTrack() {
-        // Реализуйте логику лайка при интеграции
-    }
+    private fun likeTrack() {}
 }
 
 

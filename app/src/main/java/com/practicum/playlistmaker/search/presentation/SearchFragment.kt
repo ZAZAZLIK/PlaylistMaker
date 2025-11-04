@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.main.ui
+package com.practicum.playlistmaker.search.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,7 +13,6 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
@@ -21,6 +20,7 @@ import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.main.viewmodel.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.navigation.Navigation
+import com.practicum.playlistmaker.main.ui.TrackAdapter
 
 class SearchFragment : Fragment() {
 
@@ -40,10 +40,6 @@ class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,23 +52,6 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeViews(view)
 
-        viewModel.isHistoryVisible.observe(viewLifecycleOwner) { isVisibleHistory ->
-            if (isVisibleHistory) {
-                setViewVisibility(historyTitle, true)
-                setViewVisibility(clearHistoryButton, true)
-                setViewVisibility(trackHistoryRecyclerView, true)
-                viewModel.history.observe(viewLifecycleOwner) { history ->
-                    historyAdapter.updateTracks(history)
-                    setViewVisibility(historyLayout, true)
-                }
-            } else {
-                setViewVisibility(historyTitle, false)
-                setViewVisibility(clearHistoryButton, false)
-                setViewVisibility(trackHistoryRecyclerView, false)
-                setViewVisibility(historyLayout, false)
-            }
-        }
-
         viewModel.fetchHistory()
 
         if (savedInstanceState != null) {
@@ -83,27 +62,21 @@ class SearchFragment : Fragment() {
         retryButton.setOnClickListener { viewModel.retrySearch() }
         clearHistoryButton.setOnClickListener { viewModel.clearHistory() }
 
-        viewModel.tracks.observe(viewLifecycleOwner, Observer { tracks ->
-            progressBar.isVisible = false
-            if (tracks.isEmpty()) {
-                updateNoResultsState(true)
-            } else {
-                updateNoResultsState(false)
-                trackAdapter.updateTracks(tracks)
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            updateLoadingState(state.isLoading)
+            updateNoResultsState(state.noResults)
+            updateServerErrorState(state.serverError)
+            buttonClear.isVisible = state.searchText.isNotEmpty()
+            if (!state.isLoading && !state.serverError && !state.noResults) {
+                trackAdapter.updateTracks(state.tracks)
             }
-        })
 
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            updateLoadingState(isLoading)
-        })
-
-        viewModel.noResults.observe(viewLifecycleOwner, Observer { noResults ->
-            updateNoResultsState(noResults)
-        })
-
-        viewModel.serverError.observe(viewLifecycleOwner, Observer { serverError ->
-            updateServerErrorState(serverError)
-        })
+            setViewVisibility(historyTitle, state.isHistoryVisible)
+            setViewVisibility(clearHistoryButton, state.isHistoryVisible)
+            setViewVisibility(trackHistoryRecyclerView, state.isHistoryVisible)
+            setViewVisibility(historyLayout, state.isHistoryVisible)
+            if (state.isHistoryVisible) historyAdapter.updateTracks(state.history)
+        }
 
         setupSearchFlow()
     }
@@ -154,22 +127,6 @@ class SearchFragment : Fragment() {
     private fun updateServerErrorState(serverError: Boolean) {
         serverErrorLayout.isVisible = serverError
         trackRecyclerView.isVisible = !serverError
-    }
-
-    private fun updateHistoryUI() {
-        val history = viewModel.getHistory()
-        if (history.isNotEmpty()) {
-            historyTitle.visibility = View.VISIBLE
-            clearHistoryButton.visibility = View.VISIBLE
-            trackHistoryRecyclerView.visibility = View.VISIBLE
-            historyAdapter.updateTracks(history)
-            historyLayout.visibility = View.VISIBLE
-        } else {
-            historyTitle.visibility = View.GONE
-            clearHistoryButton.visibility = View.GONE
-            trackHistoryRecyclerView.visibility = View.GONE
-            historyLayout.visibility = View.GONE
-        }
     }
 
     private fun openTrackDetails(trackDto: Track) {
