@@ -13,11 +13,14 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.main.viewmodel.SearchViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.navigation.Navigation
 import com.practicum.playlistmaker.main.ui.TrackAdapter
@@ -40,6 +43,12 @@ class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModel()
 
+    private var isTrackClickAllowed = true
+
+    companion object {
+        private const val TRACK_CLICK_DEBOUNCE_DELAY = 1000L
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,7 +67,10 @@ class SearchFragment : Fragment() {
             viewModel.setSearchText(savedInstanceState.getString("SEARCH_TEXT", ""))
         }
 
-        buttonClear.setOnClickListener { viewModel.clearSearch() }
+        buttonClear.setOnClickListener { 
+            searchInput.setText("")
+            viewModel.clearSearch() 
+        }
         retryButton.setOnClickListener { viewModel.retrySearch() }
         clearHistoryButton.setOnClickListener { viewModel.clearHistory() }
 
@@ -98,8 +110,7 @@ class SearchFragment : Fragment() {
         trackRecyclerView = view.findViewById(R.id.trackRecyclerView)
         trackRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         trackAdapter = TrackAdapter(mutableListOf()) { track ->
-            openTrackDetails(track)
-            viewModel.onTrackClicked(track)
+            handleTrackClick(track)
         }
         trackRecyclerView.adapter = trackAdapter
         progressBar = view.findViewById(R.id.progress_bar)
@@ -109,8 +120,7 @@ class SearchFragment : Fragment() {
         trackHistoryRecyclerView = view.findViewById(R.id.historyRecyclerView)
         trackHistoryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         historyAdapter = TrackAdapter(mutableListOf()) { track ->
-            openTrackDetails(track)
-            viewModel.onTrackClicked(track)
+            handleTrackClick(track)
         }
         trackHistoryRecyclerView.adapter = historyAdapter
     }
@@ -147,6 +157,17 @@ class SearchFragment : Fragment() {
 
     private fun setViewVisibility(view: View, isVisible: Boolean) {
         view.isVisible = isVisible
+    }
+
+    private fun handleTrackClick(track: Track) {
+        if (!isTrackClickAllowed) return
+        isTrackClickAllowed = false
+        viewModel.onTrackClicked(track)
+        openTrackDetails(track)
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(TRACK_CLICK_DEBOUNCE_DELAY)
+            isTrackClickAllowed = true
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

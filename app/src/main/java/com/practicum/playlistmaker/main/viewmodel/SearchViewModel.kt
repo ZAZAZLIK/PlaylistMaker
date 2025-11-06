@@ -4,10 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practicum.playlistmaker.player.domain.api.TrackInteractor
 import com.practicum.playlistmaker.player.domain.api.SearchHistoryRepository
+import com.practicum.playlistmaker.player.domain.api.TrackInteractor
 import com.practicum.playlistmaker.player.domain.models.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 
 data class SearchUiState(
     val tracks: List<Track> = emptyList(),
@@ -24,44 +27,81 @@ class SearchViewModel(
     private val searchHistoryRepository: SearchHistoryRepository
 ) : ViewModel() {
 
+    companion object {
+        private const val SEARCH_DEBOUNCE_DELAY = 500L
+    }
+
     private val _state = MutableLiveData(SearchUiState())
     val state: LiveData<SearchUiState> get() = _state
-    val searchText: LiveData<String> get() = MutableLiveData(_state.value?.searchText)
+
+    private val _searchText = MutableLiveData("")
+    val searchText: LiveData<String> get() = _searchText
+
+    private var searchJob: Job? = null
 
     fun setSearchText(query: String) {
+        _searchText.value = query
         val current = _state.value ?: SearchUiState()
-        val newIsHistoryVisible = query.isBlank() && current.history.isNotEmpty()
-        _state.value = current.copy(searchText = query, isHistoryVisible = newIsHistoryVisible)
-        if (query.isNotEmpty()) {
-            performSearch(query)
-        } else {
+        val isHistoryVisible = query.isBlank() && current.history.isNotEmpty()
+        _state.value = current.copy(
+            searchText = query,
+            isHistoryVisible = isHistoryVisible
+        )
+
+        searchJob?.cancel()
+        if (query.isBlank()) {
             resetUI()
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            executeSearch(query)
         }
     }
 
     fun clearSearch() {
+        searchJob?.cancel()
+        searchJob = null
+        _searchText.value = ""
         val current = _state.value ?: SearchUiState()
-        _state.value = current.copy(searchText = "", tracks = emptyList())
+        val history = current.history
+        _state.value = current.copy(
+            tracks = emptyList(),
+            searchText = "",
+            isLoading = false,
+            noResults = false,
+            serverError = false,
+            isHistoryVisible = history.isNotEmpty()
+        )
     }
 
     fun retrySearch() {
-        _state.value?.searchText?.let { performSearch(it) }
+        val query = _state.value?.searchText.orEmpty()
+        if (query.isBlank()) return
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            executeSearch(query)
+        }
     }
 
     fun clearHistory() {
         searchHistoryRepository.clearHistory()
         val current = _state.value ?: SearchUiState()
-        _state.value = current.copy(history = emptyList(), isHistoryVisible = false)
+        _state.value = current.copy(
+            history = emptyList(),
+            isHistoryVisible = false
+        )
     }
-
 
     fun fetchHistory() {
         viewModelScope.launch {
             val fetchedHistory = searchHistoryRepository.getHistory()
             val current = _state.value ?: SearchUiState()
+            val isHistoryVisible = fetchedHistory.isNotEmpty() && current.searchText.isBlank()
             _state.value = current.copy(
                 history = fetchedHistory,
-                isHistoryVisible = fetchedHistory.isNotEmpty() && current.searchText.isBlank()
+                isHistoryVisible = isHistoryVisible
             )
         }
     }
@@ -70,51 +110,78 @@ class SearchViewModel(
         searchHistoryRepository.addTrack(track)
     }
 
-    private fun performSearch(query: String) {
-        val current = _state.value ?: SearchUiState()
-        _state.value = current.copy(isLoading = true)
-        viewModelScope.launch {
-            val historyList = _state.value?.history ?: emptyList()
-            trackInteractor.performSearch(query, historyList) { tracks, error ->
-                handleSearchResults(tracks, error)
-            }
+    fun searchTracks() {
+        val query = _state.value?.searchText.orEmpty()
+        if (query.isBlank()) return
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            executeSearch(query)
         }
-    }
-
-    private fun handleSearchResults(fetchedTracks: List<Track>?, error: Throwable?) {
-        val current = _state.value ?: SearchUiState()
-        var newState = current.copy(isLoading = false)
-        when {
-            error != null -> {
-                newState = newState.copy(serverError = true, noResults = false, tracks = emptyList())
-            }
-            !fetchedTracks.isNullOrEmpty() -> {
-                newState = newState.copy(tracks = fetchedTracks, noResults = false, serverError = false)
-            }
-            else -> {
-                newState = newState.copy(tracks = emptyList(), noResults = true, serverError = false)
-            }
-        }
-        _state.value = newState
     }
 
     fun getHistory(): List<Track> {
         return searchHistoryRepository.getHistory()
     }
 
-    private fun resetUI() {
-        val current = _state.value ?: SearchUiState()
-        _state.value = current.copy(noResults = false, serverError = false, tracks = emptyList())
+    private suspend fun executeSearch(query: String) {
+        setLoadingState()
+        trackInteractor
+            .searchTracks(query)
+            .collect { result ->
+                handleSearchResult(result)
+            }
     }
 
-    fun searchTracks() {
-        _state.value?.searchText?.let { query ->
-            if (query.isNotBlank()) {
-                performSearch(query)
+    private fun setLoadingState() {
+        val current = _state.value ?: SearchUiState()
+        _state.postValue(
+            current.copy(
+                isLoading = true,
+                serverError = false,
+                noResults = false
+            )
+        )
+    }
+
+    private fun handleSearchResult(result: Result<List<Track>>) {
+        val current = _state.value ?: SearchUiState()
+        val newState = if (result.isSuccess) {
+            val tracks = result.getOrNull().orEmpty()
+            if (tracks.isEmpty()) {
+                current.copy(
+                    isLoading = false,
+                    tracks = emptyList(),
+                    noResults = true,
+                    serverError = false
+                )
             } else {
-                val current = _state.value ?: SearchUiState()
-                _state.value = current.copy(tracks = emptyList())
+                current.copy(
+                    isLoading = false,
+                    tracks = tracks,
+                    noResults = false,
+                    serverError = false
+                )
             }
+        } else {
+            current.copy(
+                isLoading = false,
+                tracks = emptyList(),
+                noResults = false,
+                serverError = true
+            )
         }
+        _state.postValue(newState)
+    }
+
+    private fun resetUI() {
+        val current = _state.value ?: SearchUiState()
+        val history = current.history
+        _state.value = current.copy(
+            tracks = emptyList(),
+            isLoading = false,
+            noResults = false,
+            serverError = false,
+            isHistoryVisible = history.isNotEmpty()
+        )
     }
 }
