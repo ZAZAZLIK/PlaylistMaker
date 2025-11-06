@@ -12,11 +12,12 @@ import org.koin.dsl.module
 
 val presentationModule = module {
     
+    factory { android.media.MediaPlayer() }
     viewModel { MainViewModel(get()) }
     viewModel { SearchViewModel(get(), get()) }
     viewModel { MediaLibraryViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { PlaylistsViewModel() }
     viewModel { FavoritesViewModel() }
-    viewModel { TrackDetailsViewModel() }
+    viewModel { TrackDetailsViewModel(get()) }
 }

@@ -12,9 +12,7 @@ data class TrackPlayerState(
     val positionSec: Int
 )
 
-class TrackDetailsViewModel : ViewModel() {
-
-    private var mediaPlayer: MediaPlayer? = null
+class TrackDetailsViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
     private val handler = Handler(Looper.getMainLooper())
 
     private val _state = MutableLiveData(TrackPlayerState(isPlaying = false, positionSec = 0))
@@ -23,13 +21,11 @@ class TrackDetailsViewModel : ViewModel() {
     fun play(previewUrl: String?) {
         if (previewUrl.isNullOrEmpty()) return
         try {
-            mediaPlayer?.release()
-            mediaPlayer = MediaPlayer().apply {
-                setDataSource(previewUrl)
-                prepare()
-                start()
-                setOnCompletionListener { onComplete() }
-            }
+            mediaPlayer.reset()
+            mediaPlayer.setDataSource(previewUrl)
+            mediaPlayer.prepare()
+            mediaPlayer.start()
+            mediaPlayer.setOnCompletionListener { onComplete() }
             _state.value = _state.value?.copy(isPlaying = true)
             startTicker()
         } catch (_: Exception) {
@@ -37,7 +33,7 @@ class TrackDetailsViewModel : ViewModel() {
     }
 
     fun pause() {
-        mediaPlayer?.pause()
+        mediaPlayer.pause()
         _state.value = _state.value?.copy(isPlaying = false)
     }
 
@@ -48,7 +44,7 @@ class TrackDetailsViewModel : ViewModel() {
     private fun startTicker() {
         val runnable = object : Runnable {
             override fun run() {
-                mediaPlayer?.let { mp ->
+                mediaPlayer.let { mp ->
                     if (mp.isPlaying) {
                         val sec = mp.currentPosition / 1000
                         _state.postValue(_state.value?.copy(positionSec = sec))
@@ -61,15 +57,14 @@ class TrackDetailsViewModel : ViewModel() {
     }
 
     private fun stopInternal(resetPosition: Boolean) {
-        mediaPlayer?.stop()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        mediaPlayer.stop()
         handler.removeCallbacksAndMessages(null)
         _state.value = TrackPlayerState(isPlaying = false, positionSec = if (resetPosition) 0 else _state.value?.positionSec ?: 0)
     }
 
     override fun onCleared() {
         super.onCleared()
+        mediaPlayer.release()
         stopInternal(resetPosition = false)
     }
 }
