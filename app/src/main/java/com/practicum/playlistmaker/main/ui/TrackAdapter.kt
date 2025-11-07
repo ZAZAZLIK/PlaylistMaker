@@ -47,11 +47,11 @@ class TrackAdapter(
             val imageUrl = track.artworkUrl100.ifBlank { null }
 
             Glide.with(itemView)
-                .load(imageUrl ?: R.drawable.placeholder)
+                .load(imageUrl ?: R.drawable.placeholder_ma)
                 .apply(
                     RequestOptions()
                         .transform(RoundedCorners(itemView.context.dpToPx(10)))
-                        .placeholder(R.drawable.placeholder)
+                        .placeholder(R.drawable.placeholder_ma)
                         .centerCrop()
                 )
                 .into(artworkImageView)

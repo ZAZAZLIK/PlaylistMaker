@@ -7,30 +7,14 @@
     android:background="@color/background_color"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="start|center_vertical">
-
-        <ImageButton
-            android:id="@+id/button_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_arrow_back_24"
-            android:contentDescription="@string/back_name"
-            android:padding="@dimen/twelve"
-            android:background="@android:color/transparent"
-            app:tint="@color/color_text"/>
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/title_text_view"
-            android:text="@string/search_name"
-            android:padding="@dimen/twelve"
-            style="@style/CommonTextStyle"
-            android:textSize="@dimen/text_size_twenty_two"
-            android:textColor="@color/textColorPrimary"/>
-    </LinearLayout>
+    <!-- Заголовок без кнопки Назад для BottomNavigation -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title_text_view"
+        android:text="@string/search_name"
+        android:padding="@dimen/twelve"
+        style="@style/CommonTextStyle"
+        android:textSize="@dimen/text_size_twenty_two"
+        android:textColor="@color/textColorPrimary"/>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -228,3 +212,5 @@
     </FrameLayout>
 
 </LinearLayout>
+
+

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Порядок: Поиск, Медиатека, Настройки -->
+    <item
+        android:id="@+id/searchFragment"
+        android:icon="@drawable/baseline_search_24"
+        android:title="@string/search_name" />
+    <item
+        android:id="@+id/mediaLibraryFragment"
+        android:icon="@drawable/baseline_audio_file_24"
+        android:title="@string/music_name" />
+    <item
+        android:id="@+id/settingsFragment"
+        android:icon="@drawable/baseline_settings_24"
+        android:title="@string/settings_name" />
+ </menu>
+

@@ -1,4 +1,4 @@
-package com.practicum.playlistmaker.main.viewmodel
+package com.practicum.playlistmaker.settings.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,3 +15,5 @@ class SettingsViewModel(private val preferencesUseCase: PreferencesUseCase) : Vi
         _isDarkTheme.value = isDark
     }
 }
+
+

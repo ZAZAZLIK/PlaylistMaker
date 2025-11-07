@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+        android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="31"
         android:name=".main.ui.App">
 
@@ -32,18 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".main.ui.SearchActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity
-            android:name=".main.ui.MediaLibraryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".main.ui.SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".main.ui.TrackDetailsActivity"/>
+        
     </application>
 
 </manifest>

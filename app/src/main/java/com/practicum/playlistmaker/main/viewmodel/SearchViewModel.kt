@@ -9,30 +9,29 @@ import com.practicum.playlistmaker.player.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.player.domain.models.Track
 import kotlinx.coroutines.launch
 
+data class SearchUiState(
+    val tracks: List<Track> = emptyList(),
+    val isLoading: Boolean = false,
+    val noResults: Boolean = false,
+    val serverError: Boolean = false,
+    val searchText: String = "",
+    val isHistoryVisible: Boolean = false,
+    val history: List<Track> = emptyList()
+)
+
 class SearchViewModel(
     private val trackInteractor: TrackInteractor,
     private val searchHistoryRepository: SearchHistoryRepository
 ) : ViewModel() {
 
-    private val _tracks = MutableLiveData<List<Track>>(emptyList())
-    val tracks: LiveData<List<Track>> get() = _tracks
-
-    private val _isLoading = MutableLiveData<Boolean>(false)
-    val isLoading: LiveData<Boolean> get() = _isLoading
-
-    private val _noResults = MutableLiveData<Boolean>(false)
-    val noResults: LiveData<Boolean> get() = _noResults
-
-    private val _serverError = MutableLiveData<Boolean>(false)
-    val serverError: LiveData<Boolean> get() = _serverError
-
-    private var _searchText: MutableLiveData<String> = MutableLiveData("")
-    val searchText: LiveData<String> get() = _searchText
+    private val _state = MutableLiveData(SearchUiState())
+    val state: LiveData<SearchUiState> get() = _state
+    val searchText: LiveData<String> get() = MutableLiveData(_state.value?.searchText)
 
     fun setSearchText(query: String) {
-        _searchText.value = query
-        // При вводе текста скрываем историю
-        _isHistoryVisible.value = query.isBlank() && (history.value?.isNotEmpty() == true)
+        val current = _state.value ?: SearchUiState()
+        val newIsHistoryVisible = query.isBlank() && current.history.isNotEmpty()
+        _state.value = current.copy(searchText = query, isHistoryVisible = newIsHistoryVisible)
         if (query.isNotEmpty()) {
             performSearch(query)
         } else {
@@ -41,31 +40,29 @@ class SearchViewModel(
     }
 
     fun clearSearch() {
-        _searchText.value = ""
-        _tracks.value = emptyList()
+        val current = _state.value ?: SearchUiState()
+        _state.value = current.copy(searchText = "", tracks = emptyList())
     }
 
     fun retrySearch() {
-        _searchText.value?.let { performSearch(it) }
+        _state.value?.searchText?.let { performSearch(it) }
     }
 
     fun clearHistory() {
         searchHistoryRepository.clearHistory()
-        _history.value = emptyList()
-        _isHistoryVisible.value = false
+        val current = _state.value ?: SearchUiState()
+        _state.value = current.copy(history = emptyList(), isHistoryVisible = false)
     }
 
-    private val _isHistoryVisible = MutableLiveData<Boolean>(false)
-    val isHistoryVisible: LiveData<Boolean> get() = _isHistoryVisible
-
-    private val _history: MutableLiveData<List<Track>> = MutableLiveData(emptyList())
-    val history: LiveData<List<Track>> get() = _history
 
     fun fetchHistory() {
         viewModelScope.launch {
             val fetchedHistory = searchHistoryRepository.getHistory()
-            _isHistoryVisible.value = fetchedHistory.isNotEmpty()
-            _history.value = fetchedHistory
+            val current = _state.value ?: SearchUiState()
+            _state.value = current.copy(
+                history = fetchedHistory,
+                isHistoryVisible = fetchedHistory.isNotEmpty() && current.searchText.isBlank()
+            )
         }
     }
 
@@ -74,33 +71,31 @@ class SearchViewModel(
     }
 
     private fun performSearch(query: String) {
-        _isLoading.value = true
+        val current = _state.value ?: SearchUiState()
+        _state.value = current.copy(isLoading = true)
         viewModelScope.launch {
-            trackInteractor.performSearch(query, _history.value ?: emptyList()) { tracks, error ->
+            val historyList = _state.value?.history ?: emptyList()
+            trackInteractor.performSearch(query, historyList) { tracks, error ->
                 handleSearchResults(tracks, error)
             }
         }
     }
 
     private fun handleSearchResults(fetchedTracks: List<Track>?, error: Throwable?) {
-        _isLoading.value = false
+        val current = _state.value ?: SearchUiState()
+        var newState = current.copy(isLoading = false)
         when {
             error != null -> {
-                _serverError.value = true
-                _noResults.value = false
-                _tracks.value = emptyList()
+                newState = newState.copy(serverError = true, noResults = false, tracks = emptyList())
             }
             !fetchedTracks.isNullOrEmpty() -> {
-                _tracks.value = fetchedTracks ?: emptyList()
-                _noResults.value = false
-                _serverError.value = false
+                newState = newState.copy(tracks = fetchedTracks, noResults = false, serverError = false)
             }
             else -> {
-                _tracks.value = emptyList()
-                _noResults.value = true
-                _serverError.value = false
+                newState = newState.copy(tracks = emptyList(), noResults = true, serverError = false)
             }
         }
+        _state.value = newState
     }
 
     fun getHistory(): List<Track> {
@@ -108,17 +103,17 @@ class SearchViewModel(
     }
 
     private fun resetUI() {
-        _noResults.value = false
-        _serverError.value = false
-        _tracks.value = emptyList()
+        val current = _state.value ?: SearchUiState()
+        _state.value = current.copy(noResults = false, serverError = false, tracks = emptyList())
     }
 
     fun searchTracks() {
-        _searchText.value?.let { query ->
+        _state.value?.searchText?.let { query ->
             if (query.isNotBlank()) {
                 performSearch(query)
             } else {
-                _tracks.value = emptyList()
+                val current = _state.value ?: SearchUiState()
+                _state.value = current.copy(tracks = emptyList())
             }
         }
     }
