@@ -10,6 +10,8 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -17,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.main.ui.MainActivity
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.main.viewmodel.SearchViewModel
 import kotlinx.coroutines.delay
@@ -60,6 +63,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeViews(view)
+        observeKeyboardInsets(view)
 
         viewModel.fetchHistory()
 
@@ -168,6 +172,19 @@ class SearchFragment : Fragment() {
             delay(TRACK_CLICK_DEBOUNCE_DELAY)
             isTrackClickAllowed = true
         }
+    }
+
+    private fun observeKeyboardInsets(root: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
+            val isKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            (activity as? MainActivity)?.setBottomNavVisibility(!isKeyboardVisible)
+            insets
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        (activity as? MainActivity)?.setBottomNavVisibility(true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
