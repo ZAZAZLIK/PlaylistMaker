@@ -3,8 +3,12 @@ package com.practicum.playlistmaker.main.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.player.domain.api.TrackInteractor
 import com.practicum.playlistmaker.player.domain.models.Track
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class MediaLibraryViewModel(private val trackInteractor: TrackInteractor) : ViewModel() {
 
@@ -16,13 +20,17 @@ class MediaLibraryViewModel(private val trackInteractor: TrackInteractor) : View
     }
 
     private fun loadMediaData() {
-        trackInteractor.getMediaTracks { tracks, error ->
-            if (error == null) {
-                _mediaData.postValue(tracks)
-            } else {
-                // Обработка ошибки
-                _mediaData.postValue(emptyList()) // В случае ошибки возвращаем пустой список
-            }
+        viewModelScope.launch {
+            trackInteractor
+                .getMediaTracks()
+                .catch {
+                    _mediaData.postValue(emptyList())
+                }
+                .collect { result ->
+                    result
+                        .onSuccess { tracks -> _mediaData.postValue(tracks) }
+                        .onFailure { _mediaData.postValue(emptyList()) }
+                }
         }
     }
 }
