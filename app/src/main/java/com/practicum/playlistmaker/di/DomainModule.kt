@@ -1,5 +1,8 @@
 package com.practicum.playlistmaker.di
 
+import com.practicum.playlistmaker.favorites.domain.api.FavoritesInteractor
+import com.practicum.playlistmaker.favorites.domain.api.FavoritesRepository
+import com.practicum.playlistmaker.favorites.domain.impl.FavoritesInteractorImpl
 import com.practicum.playlistmaker.player.domain.IsDarkThemeInteractor
 import com.practicum.playlistmaker.player.domain.IsDarkThemeUseCase
 import com.practicum.playlistmaker.player.domain.PreferencesUseCase
@@ -23,4 +26,7 @@ val domainModule = module {
     
     // Track Interactor
     single<TrackInteractor> { TrackInteractorImpl(get()) }
+
+    // Favorites Interactor
+    single<FavoritesInteractor> { FavoritesInteractorImpl(get<FavoritesRepository>()) }
 }

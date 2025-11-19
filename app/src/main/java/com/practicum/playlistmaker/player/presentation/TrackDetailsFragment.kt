@@ -11,12 +11,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.ui.MainActivity
+import com.practicum.playlistmaker.player.domain.models.Track
 import java.util.Locale
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TrackDetailsFragment : Fragment() {
     private lateinit var amountOfListeningTextView: TextView
     private lateinit var playButton: ImageView
+    private lateinit var likeTrackImageView: ImageView
     private var isPlaying = false
     private val viewModel: TrackDetailsViewModel by viewModel()
 
@@ -34,26 +36,15 @@ class TrackDetailsFragment : Fragment() {
 
         amountOfListeningTextView = view.findViewById(R.id.theAmountOfListening)
         playButton = view.findViewById(R.id.playButton)
+        likeTrackImageView = view.findViewById(R.id.likeTrackImageView)
 
-        val previewUrl = arguments?.getString("PREVIEW_URL")
-
-        playButton.setOnClickListener {
-            if (isPlaying) viewModel.pause() else viewModel.play(previewUrl)
+        val track = arguments?.getParcelable<Track>(ARG_TRACK)
+        if (track == null) {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+            return
         }
 
-        val likeTrackImageView: ImageView = view.findViewById(R.id.likeTrackImageView)
-        likeTrackImageView.setOnClickListener { likeTrack() }
-
-        val trackName = arguments?.getString("TRACK_NAME")
-        val artistName = arguments?.getString("ARTIST_NAME")
-        val trackTime = arguments?.getLong("TRACK_TIME") ?: 0L
-        var artworkUrl = arguments?.getString("ARTWORK_URL")
-        val collectionName = arguments?.getString("COLLECTION_NAME")
-        val releaseDate = arguments?.getString("RELEASE_DATE")
-        val primaryGenreName = arguments?.getString("PRIMARY_GENRE_NAME")
-        val country = arguments?.getString("COUNTRY")
-
-        artworkUrl = artworkUrl?.replace("100x100bb.jpg", "512x512bb.jpg")
+        val artworkUrl = track.artworkUrl100.replace("100x100bb.jpg", "512x512bb.jpg")
 
         val trackNameTextView: TextView = view.findViewById(R.id.trackNameTextView)
         val artistNameTextView: TextView = view.findViewById(R.id.artistNameTextView)
@@ -64,23 +55,40 @@ class TrackDetailsFragment : Fragment() {
         val primaryGenreNameTextView: TextView = view.findViewById(R.id.genreValue)
         val countryTextView: TextView = view.findViewById(R.id.countryValue)
 
-        trackNameTextView.text = trackName
-        artistNameTextView.text = artistName
-        trackTimeTextView.text = formatTrackTime(trackTime)
-        collectionNameTextView.text = collectionName
-        releaseDateTextView.text = releaseDate
-        primaryGenreNameTextView.text = primaryGenreName
-        countryTextView.text = country
+        trackNameTextView.text = track.trackName
+        artistNameTextView.text = track.artistName
+        trackTimeTextView.text = formatTrackTime(track.trackTimeMillis)
+        collectionNameTextView.text = track.collectionName
+        releaseDateTextView.text = track.releaseDate
+        primaryGenreNameTextView.text = track.primaryGenreName
+        countryTextView.text = track.country
 
         Glide.with(view)
             .load(artworkUrl)
             .apply(RequestOptions().placeholder(R.drawable.placeholder_ma).centerCrop())
             .into(artworkImageView)
 
+        playButton.setOnClickListener {
+            if (isPlaying) viewModel.pause() else viewModel.play(track.previewUrl)
+        }
+
+        likeTrackImageView.setOnClickListener { viewModel.onFavoriteClicked() }
+
+        viewModel.setTrack(track)
+
         viewModel.state.observe(viewLifecycleOwner) { state ->
             isPlaying = state.isPlaying
-            amountOfListeningTextView.text = String.format(Locale.getDefault(), "%02d:%02d", state.positionSec / 60, state.positionSec % 60)
+            amountOfListeningTextView.text = String.format(
+                Locale.getDefault(),
+                "%02d:%02d",
+                state.positionSec / 60,
+                state.positionSec % 60
+            )
             updatePlayButton()
+        }
+
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFavorite ->
+            updateFavoriteIcon(isFavorite)
         }
     }
 
@@ -98,12 +106,20 @@ class TrackDetailsFragment : Fragment() {
         }
     }
 
-    private fun likeTrack() {}
+    private fun updateFavoriteIcon(isFavorite: Boolean) {
+        if (isFavorite) {
+            likeTrackImageView.setImageResource(R.drawable.baseline_favorite_24)
+        } else {
+            likeTrackImageView.setImageResource(R.drawable.baseline_favorite_border_24)
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         (activity as? MainActivity)?.setBottomNavVisibility(true)
     }
+
+    companion object {
+        const val ARG_TRACK = "arg_track"
+    }
 }
-
-

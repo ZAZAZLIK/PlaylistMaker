@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.favorites.domain.api.FavoritesInteractor
 import com.practicum.playlistmaker.player.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.player.domain.api.TrackInteractor
 import com.practicum.playlistmaker.player.domain.models.Track
@@ -24,7 +25,8 @@ data class SearchUiState(
 
 class SearchViewModel(
     private val trackInteractor: TrackInteractor,
-    private val searchHistoryRepository: SearchHistoryRepository
+    private val searchHistoryRepository: SearchHistoryRepository,
+    private val favoritesInteractor: FavoritesInteractor
 ) : ViewModel() {
 
     companion object {
@@ -96,7 +98,11 @@ class SearchViewModel(
 
     fun fetchHistory() {
         viewModelScope.launch {
-            val fetchedHistory = searchHistoryRepository.getHistory()
+            val fetchedHistory = searchHistoryRepository.getHistory().toMutableList()
+            val favoriteIds = favoritesInteractor.getFavoriteTrackIds()
+            fetchedHistory.forEach { track ->
+                track.isFavorite = favoriteIds.contains(track.trackId)
+            }
             val current = _state.value ?: SearchUiState()
             val isHistoryVisible = fetchedHistory.isNotEmpty() && current.searchText.isBlank()
             _state.value = current.copy(
