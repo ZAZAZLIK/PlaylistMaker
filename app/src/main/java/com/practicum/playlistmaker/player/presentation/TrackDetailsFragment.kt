@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.main.ui.MainActivity
 import java.util.Locale
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -29,6 +30,7 @@ class TrackDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as? MainActivity)?.setBottomNavVisibility(false)
 
         amountOfListeningTextView = view.findViewById(R.id.theAmountOfListening)
         playButton = view.findViewById(R.id.playButton)
@@ -97,6 +99,11 @@ class TrackDetailsFragment : Fragment() {
     }
 
     private fun likeTrack() {}
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        (activity as? MainActivity)?.setBottomNavVisibility(true)
+    }
 }
 
 

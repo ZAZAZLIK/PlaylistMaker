@@ -1,11 +1,14 @@
 package com.practicum.playlistmaker.player.presentation
 
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 data class TrackPlayerState(
     val isPlaying: Boolean,
@@ -13,10 +16,13 @@ data class TrackPlayerState(
 )
 
 class TrackDetailsViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() {
-    private val handler = Handler(Looper.getMainLooper())
+    companion object {
+        private const val PROGRESS_UPDATE_DELAY_MS = 300L
+    }
 
     private val _state = MutableLiveData(TrackPlayerState(isPlaying = false, positionSec = 0))
     val state: LiveData<TrackPlayerState> get() = _state
+    private var progressJob: Job? = null
 
     fun play(previewUrl: String?) {
         if (previewUrl.isNullOrEmpty()) return
@@ -26,46 +32,48 @@ class TrackDetailsViewModel(private val mediaPlayer: MediaPlayer) : ViewModel() 
             mediaPlayer.prepare()
             mediaPlayer.start()
             mediaPlayer.setOnCompletionListener { onComplete() }
-            _state.value = _state.value?.copy(isPlaying = true)
-            startTicker()
+            _state.value = TrackPlayerState(isPlaying = true, positionSec = 0)
+            startProgressUpdates()
         } catch (_: Exception) {
+            _state.value = TrackPlayerState(isPlaying = false, positionSec = 0)
         }
     }
 
     fun pause() {
-        mediaPlayer.pause()
-        _state.value = _state.value?.copy(isPlaying = false)
+        try {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+            }
+        } catch (_: IllegalStateException) {
+        }
+        progressJob?.cancel()
+        val currentPosition = runCatching { mediaPlayer.currentPosition / 1000 }.getOrDefault(0)
+        _state.value = TrackPlayerState(isPlaying = false, positionSec = currentPosition)
     }
 
     private fun onComplete() {
-        stopInternal(resetPosition = true)
+        progressJob?.cancel()
+        runCatching { mediaPlayer.stop() }
+        runCatching { mediaPlayer.reset() }
+        _state.postValue(TrackPlayerState(isPlaying = false, positionSec = 0))
     }
 
-    private fun startTicker() {
-        val runnable = object : Runnable {
-            override fun run() {
-                mediaPlayer.let { mp ->
-                    if (mp.isPlaying) {
-                        val sec = mp.currentPosition / 1000
-                        _state.postValue(_state.value?.copy(positionSec = sec))
-                        handler.postDelayed(this, 1000)
-                    }
-                }
+    private fun startProgressUpdates() {
+        progressJob?.cancel()
+        progressJob = viewModelScope.launch {
+            while (isActive && mediaPlayer.isPlaying) {
+                val seconds = mediaPlayer.currentPosition / 1000
+                _state.value = TrackPlayerState(isPlaying = true, positionSec = seconds)
+                delay(PROGRESS_UPDATE_DELAY_MS)
             }
         }
-        handler.post(runnable)
-    }
-
-    private fun stopInternal(resetPosition: Boolean) {
-        mediaPlayer.stop()
-        handler.removeCallbacksAndMessages(null)
-        _state.value = TrackPlayerState(isPlaying = false, positionSec = if (resetPosition) 0 else _state.value?.positionSec ?: 0)
     }
 
     override fun onCleared() {
         super.onCleared()
+        progressJob?.cancel()
+        mediaPlayer.setOnCompletionListener(null)
         mediaPlayer.release()
-        stopInternal(resetPosition = false)
     }
 }
 
