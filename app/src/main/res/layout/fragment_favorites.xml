@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:paddingStart="@dimen/twelve"
         android:paddingEnd="@dimen/twelve"
+        android:paddingTop="@dimen/twelve"
         android:clipToPadding="false"/>
 
     <LinearLayout

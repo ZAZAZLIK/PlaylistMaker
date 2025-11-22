@@ -38,6 +38,11 @@ class TrackDetailsFragment : Fragment() {
         playButton = view.findViewById(R.id.playButton)
         likeTrackImageView = view.findViewById(R.id.likeTrackImageView)
 
+        val backButton: android.widget.ImageButton = view.findViewById(R.id.button_back)
+        backButton.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
         val track = arguments?.getParcelable<Track>(ARG_TRACK)
         if (track == null) {
             requireActivity().onBackPressedDispatcher.onBackPressed()

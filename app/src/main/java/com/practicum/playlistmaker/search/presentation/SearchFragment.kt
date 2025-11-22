@@ -65,6 +65,7 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeViews(view)
         observeKeyboardInsets(view)
+        isTrackClickAllowed = true
 
         viewModel.fetchHistory()
 
@@ -173,6 +174,12 @@ class SearchFragment : Fragment() {
             (activity as? MainActivity)?.setBottomNavVisibility(!isKeyboardVisible)
             insets
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Сбрасываем флаг кликабельности при возврате на экран
+        isTrackClickAllowed = true
     }
 
     override fun onDestroyView() {
