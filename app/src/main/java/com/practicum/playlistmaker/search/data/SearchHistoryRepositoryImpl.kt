@@ -15,7 +15,7 @@ class SearchHistoryRepositoryImpl(private val sharedPreferences: SharedPreferenc
     override fun addTrack(track: Track) {
         val history = getHistory().toMutableList()
 
-        history.removeIf { it.trackName == track.trackName && it.artistName == track.artistName }
+        history.removeIf { it.trackId == track.trackId }
 
         history.add(0, track)
 

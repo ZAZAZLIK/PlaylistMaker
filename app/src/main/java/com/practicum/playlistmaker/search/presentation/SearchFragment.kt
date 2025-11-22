@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.main.ui.MainActivity
 import com.practicum.playlistmaker.player.domain.models.Track
+import com.practicum.playlistmaker.player.presentation.TrackDetailsFragment
 import com.practicum.playlistmaker.main.viewmodel.SearchViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -64,6 +65,7 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeViews(view)
         observeKeyboardInsets(view)
+        isTrackClickAllowed = true
 
         viewModel.fetchHistory()
 
@@ -145,15 +147,7 @@ class SearchFragment : Fragment() {
 
     private fun openTrackDetails(trackDto: Track) {
         val bundle = Bundle().apply {
-            putString("TRACK_NAME", trackDto.trackName)
-            putString("ARTIST_NAME", trackDto.artistName)
-            putLong("TRACK_TIME", trackDto.trackTimeMillis)
-            putString("ARTWORK_URL", trackDto.artworkUrl100)
-            putString("COLLECTION_NAME", trackDto.collectionName ?: "Неизвестен")
-            putString("RELEASE_DATE", trackDto.releaseDate ?: "Не указано")
-            putString("PRIMARY_GENRE_NAME", trackDto.primaryGenreName ?: "Неизвестен")
-            putString("COUNTRY", trackDto.country ?: "Неизвестно")
-            putString("PREVIEW_URL", trackDto.previewUrl ?: "Неизвестно")
+            putParcelable(TrackDetailsFragment.ARG_TRACK, trackDto)
         }
         Navigation.findNavController(requireActivity(), R.id.nav_host_fragment)
             .navigate(R.id.trackDetailsFragment, bundle)
@@ -180,6 +174,12 @@ class SearchFragment : Fragment() {
             (activity as? MainActivity)?.setBottomNavVisibility(!isKeyboardVisible)
             insets
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Сбрасываем флаг кликабельности при возврате на экран
+        isTrackClickAllowed = true
     }
 
     override fun onDestroyView() {
