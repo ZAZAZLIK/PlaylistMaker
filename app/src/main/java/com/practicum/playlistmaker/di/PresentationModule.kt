@@ -14,7 +14,7 @@ val presentationModule = module {
     
     factory { android.media.MediaPlayer() }
     viewModel { MainViewModel(get()) }
-    viewModel { SearchViewModel(get(), get(), get()) }
+    viewModel { SearchViewModel(get(), get()) }
     viewModel { MediaLibraryViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { PlaylistsViewModel() }

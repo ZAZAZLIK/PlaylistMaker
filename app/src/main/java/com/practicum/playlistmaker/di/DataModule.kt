@@ -31,8 +31,8 @@ val dataModule = module {
     single { get<FavoritesDatabase>().favoritesDao() }
     
     // Repositories
-    single<TrackRepository> { TrackRepositoryImpl(get(), get()) }
-    single<FavoritesRepository> { FavoritesRepositoryImpl(get()) }
+    single<TrackRepository> { TrackRepositoryImpl(get()) }
+    factory<FavoritesRepository> { FavoritesRepositoryImpl(get()) }
     
     single<SearchHistoryRepository> { 
         SearchHistoryRepositoryImpl(

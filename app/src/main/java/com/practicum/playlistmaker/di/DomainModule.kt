@@ -28,5 +28,5 @@ val domainModule = module {
     single<TrackInteractor> { TrackInteractorImpl(get()) }
 
     // Favorites Interactor
-    single<FavoritesInteractor> { FavoritesInteractorImpl(get<FavoritesRepository>()) }
+    factory<FavoritesInteractor> { FavoritesInteractorImpl(get<FavoritesRepository>()) }
 }
