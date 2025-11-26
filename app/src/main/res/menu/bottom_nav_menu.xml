@@ -7,7 +7,7 @@
         android:title="@string/search_name" />
     <item
         android:id="@+id/mediaLibraryFragment"
-        android:icon="@drawable/baseline_audio_file_24"
+        android:icon="@drawable/baseline_library_music_24"
         android:title="@string/music_name" />
     <item
         android:id="@+id/settingsFragment"

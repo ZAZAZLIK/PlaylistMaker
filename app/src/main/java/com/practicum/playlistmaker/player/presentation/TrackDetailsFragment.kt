@@ -32,6 +32,8 @@ class TrackDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
+        // Гарантируем, что нижняя панель навигации скрыта на экране плеера
         (activity as? MainActivity)?.setBottomNavVisibility(false)
 
         amountOfListeningTextView = view.findViewById(R.id.theAmountOfListening)
@@ -119,9 +121,10 @@ class TrackDetailsFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        (activity as? MainActivity)?.setBottomNavVisibility(true)
+    override fun onResume() {
+        super.onResume()
+        // Гарантируем, что нижняя панель навигации скрыта на экране плеера
+        (activity as? MainActivity)?.setBottomNavVisibility(false)
     }
 
     companion object {
