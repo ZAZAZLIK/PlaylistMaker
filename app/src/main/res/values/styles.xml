@@ -30,16 +30,24 @@
 
     </style>
 
-    <style name="BottomNavigationView.Active" parent="TextAppearance.MaterialComponents.Caption">
+    <style name="BottomNavTextActive" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">@color/blue</item>
         <item name="fontFamily">@font/ys_display_medium</item>
+
     </style>
 
-    <style name="BottomNavigationView.Inactive" parent="TextAppearance.MaterialComponents.Caption">
+    <style name="BottomNavTextInactive" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/gray</item>
         <item name="fontFamily">@font/ys_display_regular</item>
+
+    </style>
+
+    <style name="BottomNavActiveIndicator">
+        <item name="android:color">@android:color/transparent</item>
+        <item name="android:width">0dp</item>
+        <item name="android:height">0dp</item>
     </style>
 
 </resources>

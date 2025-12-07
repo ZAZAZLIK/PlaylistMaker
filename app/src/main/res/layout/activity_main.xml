@@ -21,11 +21,13 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:background="@color/background_color"
+        app:itemActiveIndicatorStyle="@style/BottomNavActiveIndicator"
         app:itemIconTint="@color/bottom_nav_item_color"
         app:itemTextColor="@color/bottom_nav_item_color"
         app:itemIconSize="24dp"
-        app:itemTextAppearanceActive="@style/BottomNavigationView.Active"
-        app:itemTextAppearanceInactive="@style/BottomNavigationView.Inactive"
+        app:itemPaddingTop="4dp"
+        app:itemTextAppearanceActive="@style/BottomNavTextActive"
+        app:itemTextAppearanceInactive="@style/BottomNavTextInactive"
         app:menu="@menu/bottom_nav_menu" />
 
 </LinearLayout>
