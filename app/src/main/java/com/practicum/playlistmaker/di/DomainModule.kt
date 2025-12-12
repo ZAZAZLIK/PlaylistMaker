@@ -11,6 +11,9 @@ import com.practicum.playlistmaker.player.domain.SaveThemeInteractor
 import com.practicum.playlistmaker.player.domain.SaveThemeUseCase
 import com.practicum.playlistmaker.player.domain.api.TrackInteractor
 import com.practicum.playlistmaker.player.domain.impl.TrackInteractorImpl
+import com.practicum.playlistmaker.playlists.domain.api.PlaylistsInteractor
+import com.practicum.playlistmaker.playlists.domain.api.PlaylistsRepository
+import com.practicum.playlistmaker.playlists.domain.impl.PlaylistsInteractorImpl
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -29,4 +32,7 @@ val domainModule = module {
 
     // Favorites Interactor
     factory<FavoritesInteractor> { FavoritesInteractorImpl(get<FavoritesRepository>()) }
+    
+    // Playlists Interactor
+    factory<PlaylistsInteractor> { PlaylistsInteractorImpl(get<PlaylistsRepository>()) }
 }
