@@ -25,5 +25,6 @@
     <color name="search_hint_color_dark">#AEAFB4</color>
     <color name="the_color_of_the_refresh_button">#1A1B22</color>
     <color name="button_text_color">#FFFFFF</color>
+    <color name="favorite_active">#FF3B30</color>
 
 </resources>
