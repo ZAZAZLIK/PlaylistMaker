@@ -10,6 +10,8 @@ import com.practicum.playlistmaker.player.data.TrackRepositoryImpl
 import com.practicum.playlistmaker.player.domain.api.PreferencesDataSource
 import com.practicum.playlistmaker.player.domain.api.SearchHistoryRepository
 import com.practicum.playlistmaker.player.domain.api.TrackRepository
+import com.practicum.playlistmaker.playlists.data.PlaylistsRepositoryImpl
+import com.practicum.playlistmaker.playlists.domain.api.PlaylistsRepository
 import com.practicum.playlistmaker.search.data.SearchHistoryRepositoryImpl
 import com.practicum.playlistmaker.search.data.network.RetrofitNetworkClient
 import org.koin.android.ext.koin.androidContext
@@ -26,13 +28,17 @@ val dataModule = module {
             androidContext(),
             FavoritesDatabase::class.java,
             "favorites_database"
-        ).build()
+        )
+        .fallbackToDestructiveMigration()
+        .build()
     }
     single { get<FavoritesDatabase>().favoritesDao() }
+    single { get<FavoritesDatabase>().playlistsDao() }
     
     // Repositories
     single<TrackRepository> { TrackRepositoryImpl(get()) }
     factory<FavoritesRepository> { FavoritesRepositoryImpl(get()) }
+    factory<PlaylistsRepository> { PlaylistsRepositoryImpl(get()) }
     
     single<SearchHistoryRepository> { 
         SearchHistoryRepositoryImpl(

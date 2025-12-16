@@ -173,7 +173,7 @@ class SearchFragment : Fragment() {
             val isKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
             // Управляем видимостью панели только если мы на экране поиска
             if (isResumed && isVisible) {
-                (activity as? MainActivity)?.setBottomNavVisibility(!isKeyboardVisible)
+            (activity as? MainActivity)?.setBottomNavVisibility(!isKeyboardVisible)
             }
             insets
         }

@@ -24,5 +24,31 @@
         android:name="com.practicum.playlistmaker.player.presentation.TrackDetailsFragment"
         android:label="@string/track_duration" />
 
+    <fragment
+        android:id="@+id/createPlaylistFragment"
+        android:name="com.practicum.playlistmaker.playlists.presentation.CreatePlaylistFragment"
+        android:label="@string/new_playlist" />
+
+    <fragment
+        android:id="@+id/playlistFragment"
+        android:name="com.practicum.playlistmaker.playlists.presentation.PlaylistFragment"
+        android:label="@string/playlist_title">
+        <argument
+            android:name="playlist_id"
+            app:argType="long" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_mediaLibraryFragment_to_createPlaylistFragment"
+        app:destination="@id/createPlaylistFragment" />
+
+    <action
+        android:id="@+id/action_trackDetailsFragment_to_createPlaylistFragment"
+        app:destination="@id/createPlaylistFragment" />
+
+    <action
+        android:id="@+id/action_mediaLibraryFragment_to_playlistFragment"
+        app:destination="@id/playlistFragment" />
+
 </navigation>
 

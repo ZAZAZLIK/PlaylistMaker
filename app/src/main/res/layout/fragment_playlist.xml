@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="24dp">
+
+        <ImageButton
+            android:id="@+id/button_back"
+            android:layout_width="@dimen/forty_eight"
+            android:layout_height="@dimen/forty_eight"
+            android:src="@drawable/baseline_arrow_back_24"
+            android:contentDescription="@string/back_name"
+            android:background="@android:color/transparent"
+            android:focusable="true"
+            android:clickable="true"
+            app:tint="@color/color_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:id="@+id/title_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/playlist_title"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/textColorPrimary"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button_back"
+            android:layout_marginStart="24dp" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/coverCardView"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginHorizontal="@dimen/twenty_four"
+            android:layout_marginTop="@dimen/twenty_four"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title_text_view">
+
+            <ImageView
+                android:id="@+id/coverImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/playlist_cover_placeholder"
+                android:contentDescription="@string/playlist_name" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/playlistNameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/textColorPrimary"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="@dimen/twenty_four"
+            app:layout_constraintTop_toBottomOf="@id/coverCardView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/playlistDescriptionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="@dimen/twenty_four"
+            app:layout_constraintTop_toBottomOf="@id/playlistNameTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/playlistDurationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/textColorPrimary"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="@dimen/twenty_four"
+            app:layout_constraintTop_toBottomOf="@id/playlistDescriptionTextView"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/playlistTracksCountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/textColorPrimary"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="@dimen/twenty_four"
+            app:layout_constraintTop_toBottomOf="@id/playlistDurationTextView"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:id="@+id/shareButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/baseline_share_24"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/share_the_app_name"
+            app:tint="@color/color_text"
+            app:layout_constraintTop_toTopOf="@id/playlistDurationTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="@dimen/twenty_four" />
+
+        <ImageButton
+            android:id="@+id/menuButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/baseline_more_vert_24"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/playlist_menu"
+            app:tint="@color/color_text"
+            app:layout_constraintTop_toBottomOf="@id/shareButton"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="@dimen/twenty_four" />
+
+        <TextView
+            android:id="@+id/tracksPlaceholderTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Список треков будет здесь"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            android:gravity="center"
+            android:layout_marginTop="32dp"
+            android:layout_marginHorizontal="@dimen/twenty_four"
+            app:layout_constraintTop_toBottomOf="@id/playlistTracksCountTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
