@@ -10,8 +10,16 @@ import org.koin.java.KoinJavaComponent.getKoin
 
 class App : Application() {
 
+    companion object {
+        lateinit var instance: App
+
+            private set
+    }
+
     override fun onCreate() {
         super.onCreate()
+
+        instance = this
 
         startKoin {
             androidContext(this@App)
