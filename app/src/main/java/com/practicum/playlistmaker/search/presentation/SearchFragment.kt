@@ -89,9 +89,6 @@ class SearchFragment : Fragment() {
                 trackAdapter.updateTracks(state.tracks)
             }
 
-            setViewVisibility(historyTitle, state.isHistoryVisible)
-            setViewVisibility(clearHistoryButton, state.isHistoryVisible)
-            setViewVisibility(trackHistoryRecyclerView, state.isHistoryVisible)
             setViewVisibility(historyLayout, state.isHistoryVisible)
             if (state.isHistoryVisible) historyAdapter.updateTracks(state.history)
         }

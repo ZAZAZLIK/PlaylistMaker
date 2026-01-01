@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="24dp">
 
         <ImageButton
             android:id="@+id/button_back"
@@ -116,9 +112,10 @@
             android:background="@android:color/transparent"
             android:contentDescription="@string/share_the_app_name"
             app:tint="@color/color_text"
+            android:elevation="8dp"
             app:layout_constraintTop_toTopOf="@id/playlistDurationTextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="@dimen/twenty_four" />
+            app:layout_constraintEnd_toStartOf="@id/menuButton"
+            android:layout_marginEnd="8dp" />
 
         <ImageButton
             android:id="@+id/menuButton"
@@ -128,24 +125,36 @@
             android:background="@android:color/transparent"
             android:contentDescription="@string/playlist_menu"
             app:tint="@color/color_text"
-            app:layout_constraintTop_toBottomOf="@id/shareButton"
+            android:elevation="8dp"
+            app:layout_constraintTop_toTopOf="@id/playlistDurationTextView"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="@dimen/twenty_four" />
 
-        <TextView
-            android:id="@+id/tracksPlaceholderTextView"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tracksRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Список треков будет здесь"
-            android:textSize="14sp"
-            android:textColor="@color/gray"
-            android:gravity="center"
-            android:layout_marginTop="32dp"
-            android:layout_marginHorizontal="@dimen/twenty_four"
-            app:layout_constraintTop_toBottomOf="@id/playlistTracksCountTextView"
+            android:layout_height="0dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="24dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/menuButton"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/emptyTracksTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_playlist_tracks"
+            android:textSize="16sp"
+            android:textColor="@color/gray"
+            android:gravity="center"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/menuButton"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="32dp" />
 
-</ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>

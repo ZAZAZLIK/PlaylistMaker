@@ -4,6 +4,7 @@ import com.practicum.playlistmaker.playlists.data.db.PlaylistsDao
 import com.practicum.playlistmaker.playlists.data.mapper.toDomain
 import com.practicum.playlistmaker.playlists.data.mapper.toEntity
 import com.practicum.playlistmaker.playlists.data.mapper.toPlaylistTrackEntity
+import com.practicum.playlistmaker.playlists.data.mapper.toDomainTrack
 import com.practicum.playlistmaker.playlists.domain.api.PlaylistsRepository
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.playlists.domain.models.Playlist
@@ -48,6 +49,25 @@ class PlaylistsRepositoryImpl(
             trackCount = updatedTrackIds.size
         )
         playlistsDao.updatePlaylist(updatedPlaylist.toEntity())
+    }
+
+    override suspend fun getPlaylistTracks(trackIds: List<Long>): List<Track> {
+        if (trackIds.isEmpty()) return emptyList()
+        return playlistsDao.getTracksByIds(trackIds).map { it.toDomainTrack() }
+    }
+
+    override suspend fun removeTrackFromPlaylist(trackId: Long, playlist: Playlist) {
+        // Удаляем трек из плейлиста
+        val updatedTrackIds = playlist.trackIds.filter { it != trackId }
+        val updatedPlaylist = playlist.copy(
+            trackIds = updatedTrackIds,
+            trackCount = updatedTrackIds.size
+        )
+        playlistsDao.updatePlaylist(updatedPlaylist.toEntity())
+    }
+
+    override suspend fun deletePlaylist(playlistId: Long) {
+        playlistsDao.deletePlaylist(playlistId)
     }
 }
 

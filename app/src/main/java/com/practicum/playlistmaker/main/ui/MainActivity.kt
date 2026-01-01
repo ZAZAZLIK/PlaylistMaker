@@ -45,12 +45,14 @@ class MainActivity : AppCompatActivity() {
             // Скрываем нижнюю навигацию на экранах плеера, создания и просмотра плейлиста
             val shouldShowNav = destination.id != R.id.trackDetailsFragment &&
                                 destination.id != R.id.createPlaylistFragment &&
-                                destination.id != R.id.playlistFragment
+                                destination.id != R.id.playlistFragment &&
+                                destination.id != R.id.editPlaylistFragment
             bottomNavigation.isVisible = shouldShowNav
             
             // Показываем/скрываем AppBar в зависимости от экрана
             val shouldShowAppBar = destination.id == R.id.createPlaylistFragment ||
-                                   destination.id == R.id.playlistFragment
+                                   destination.id == R.id.playlistFragment ||
+                                   destination.id == R.id.editPlaylistFragment
             toolbar.isVisible = shouldShowAppBar
         }
     }
@@ -59,7 +61,8 @@ class MainActivity : AppCompatActivity() {
         // Для экранов создания и просмотра плейлиста навигация обрабатывается в самих фрагментах
         val currentDestination = navController.currentDestination?.id
         if (currentDestination == R.id.createPlaylistFragment ||
-            currentDestination == R.id.playlistFragment) {
+            currentDestination == R.id.playlistFragment ||
+            currentDestination == R.id.editPlaylistFragment) {
             return false // Позволяем фрагменту обработать нажатие через toolbar.setNavigationOnClickListener
         }
         return navController.navigateUp() || super.onSupportNavigateUp()

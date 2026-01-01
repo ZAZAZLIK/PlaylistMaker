@@ -54,8 +54,8 @@
         app:layout_constraintTop_toBottomOf="@id/coverCardView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:boxStrokeColor="@color/blue"
-        app:hintTextColor="@color/gray"
+        app:boxStrokeColor="@color/text_input_box_stroke_color"
+        app:hintTextColor="@color/text_input_hint_color"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -79,8 +79,8 @@
         app:layout_constraintTop_toBottomOf="@id/nameInputLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:boxStrokeColor="@color/blue"
-        app:hintTextColor="@color/gray"
+        app:boxStrokeColor="@color/text_input_box_stroke_color"
+        app:hintTextColor="@color/text_input_hint_color"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.playlists.domain.api.PlaylistsInteractor
+import com.practicum.playlistmaker.player.domain.models.Track
 import kotlinx.coroutines.launch
 
 class PlaylistViewModel(
@@ -18,11 +19,15 @@ class PlaylistViewModel(
         val description: String?,
         val coverPath: String?,
         val tracksCountText: String,
-        val durationText: String
+        val durationText: String,
+        val tracks: List<Track> = emptyList()
     )
 
     private val _playlist = MutableLiveData<UiState?>()
     val playlist: LiveData<UiState?> = _playlist
+
+    private val _playlistDeleted = MutableLiveData<Boolean>()
+    val playlistDeleted: LiveData<Boolean> = _playlistDeleted
 
     fun loadPlaylist(playlistId: Long) {
         viewModelScope.launch {
@@ -32,11 +37,25 @@ class PlaylistViewModel(
                 return@launch
             }
 
-            // Пока шаг 3 не реализован, считаем длительность как 0 минут
-            val durationText = "0 мин"
+            // Загружаем треки плейлиста
+            val tracks = if (playlist.trackIds.isNotEmpty()) {
+                interactor.getPlaylistTracks(playlist.trackIds).reversed() // Последние добавленные сверху
+            } else {
+                emptyList()
+            }
+
+            // Вычисляем суммарную длительность
+            val totalDurationMillis = tracks.sumOf { it.trackTimeMillis }
+            val totalMinutes = (totalDurationMillis / 1000 / 60).toInt()
+            
+            val context = com.practicum.playlistmaker.main.ui.App.instance
+            val durationText = context.resources.getQuantityString(
+                R.plurals.minutes_count,
+                totalMinutes,
+                totalMinutes
+            )
 
             val tracksCount = playlist.trackCount
-            val context = com.practicum.playlistmaker.main.ui.App.instance
             val tracksCountText = context.resources.getQuantityString(
                 R.plurals.tracks_count,
                 tracksCount,
@@ -49,8 +68,31 @@ class PlaylistViewModel(
                 description = playlist.description,
                 coverPath = playlist.coverPath,
                 tracksCountText = tracksCountText,
-                durationText = durationText
+                durationText = durationText,
+                tracks = tracks
             )
         }
+    }
+
+    fun deleteTrack(trackId: Long) {
+        viewModelScope.launch {
+            val currentState = _playlist.value ?: return@launch
+            val playlist = interactor.getPlaylistById(currentState.id) ?: return@launch
+            
+            interactor.removeTrackFromPlaylist(trackId, playlist)
+            // Перезагружаем плейлист после удаления
+            loadPlaylist(currentState.id)
+        }
+    }
+
+    fun deletePlaylist(playlistId: Long) {
+        viewModelScope.launch {
+            interactor.deletePlaylist(playlistId)
+            _playlistDeleted.value = true
+        }
+    }
+
+    fun resetPlaylistDeleted() {
+        _playlistDeleted.value = false
     }
 }
