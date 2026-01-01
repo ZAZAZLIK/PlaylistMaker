@@ -22,4 +22,12 @@ data class Track(
         val seconds = (trackTimeMillis / 1000 % 60).toString().padStart(2, '0')
         return "$minutes:$seconds"
     }
+
+    fun getFormattedYear(): String {
+        return if (releaseDate.length >= 4) {
+            releaseDate.substring(0, 4)
+        } else {
+            releaseDate
+        }
+    }
 }

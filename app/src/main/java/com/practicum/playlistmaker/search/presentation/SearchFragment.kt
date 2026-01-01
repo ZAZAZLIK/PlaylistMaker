@@ -89,9 +89,6 @@ class SearchFragment : Fragment() {
                 trackAdapter.updateTracks(state.tracks)
             }
 
-            setViewVisibility(historyTitle, state.isHistoryVisible)
-            setViewVisibility(clearHistoryButton, state.isHistoryVisible)
-            setViewVisibility(trackHistoryRecyclerView, state.isHistoryVisible)
             setViewVisibility(historyLayout, state.isHistoryVisible)
             if (state.isHistoryVisible) historyAdapter.updateTracks(state.history)
         }
@@ -171,7 +168,10 @@ class SearchFragment : Fragment() {
     private fun observeKeyboardInsets(root: View) {
         ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
             val isKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            // Управляем видимостью панели только если мы на экране поиска
+            if (isResumed && isVisible) {
             (activity as? MainActivity)?.setBottomNavVisibility(!isKeyboardVisible)
+            }
             insets
         }
     }
@@ -184,7 +184,7 @@ class SearchFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as? MainActivity)?.setBottomNavVisibility(true)
+        // Управление видимостью панели навигации теперь централизовано в MainActivity
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
