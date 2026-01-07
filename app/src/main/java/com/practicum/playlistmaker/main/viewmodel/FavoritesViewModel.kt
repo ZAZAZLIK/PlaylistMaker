@@ -5,14 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.favorites.domain.api.FavoritesInteractor
-import com.practicum.playlistmaker.player.domain.models.Track
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-
-data class FavoritesUiState(
-    val tracks: List<Track> = emptyList(),
-    val isEmpty: Boolean = true
-)
 
 class FavoritesViewModel(
     private val favoritesInteractor: FavoritesInteractor

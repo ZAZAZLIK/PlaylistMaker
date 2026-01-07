@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.favorites.domain.api.FavoritesInteractor
 import com.practicum.playlistmaker.player.domain.models.Track
+import com.practicum.playlistmaker.playlists.domain.api.PlaylistsInteractor
+import com.practicum.playlistmaker.playlists.domain.models.Playlist
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -19,7 +21,8 @@ data class TrackPlayerState(
 
 class TrackDetailsViewModel(
     private val mediaPlayer: MediaPlayer,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val playlistsInteractor: PlaylistsInteractor
 ) : ViewModel() {
     companion object {
         private const val PROGRESS_UPDATE_DELAY_MS = 300L
@@ -31,6 +34,12 @@ class TrackDetailsViewModel(
     private val _isFavorite = MutableLiveData(false)
     val isFavorite: LiveData<Boolean> get() = _isFavorite
     private var currentTrack: Track? = null
+    
+    private val _playlists = MutableLiveData<List<Playlist>>()
+    val playlists: LiveData<List<Playlist>> = _playlists
+    
+    private val _addToPlaylistResult = MutableLiveData<String?>()
+    val addToPlaylistResult: LiveData<String?> = _addToPlaylistResult
 
     fun play(previewUrl: String?) {
         if (previewUrl.isNullOrEmpty()) return
@@ -99,6 +108,28 @@ class TrackDetailsViewModel(
                 delay(PROGRESS_UPDATE_DELAY_MS)
             }
         }
+    }
+
+    fun loadPlaylists() {
+        viewModelScope.launch {
+            _playlists.value = playlistsInteractor.getPlaylists()
+        }
+    }
+    
+    fun addTrackToPlaylist(playlist: Playlist) {
+        val track = currentTrack ?: return
+        viewModelScope.launch {
+            if (playlist.trackIds.contains(track.trackId)) {
+                _addToPlaylistResult.value = "already_added:${playlist.name}"
+            } else {
+                playlistsInteractor.addTrackToPlaylist(track, playlist)
+                _addToPlaylistResult.value = "added:${playlist.name}"
+            }
+        }
+    }
+    
+    fun resetAddToPlaylistResult() {
+        _addToPlaylistResult.value = null
     }
 
     override fun onCleared() {
