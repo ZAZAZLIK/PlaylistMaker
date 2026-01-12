@@ -10,14 +10,10 @@ import org.koin.java.KoinJavaComponent.getKoin
 
 class App : Application() {
 
-    companion object {
-        lateinit var instance: App
-            private set
-    }
+
 
     override fun onCreate() {
         super.onCreate()
-
         instance = this
 
         startKoin {
@@ -33,5 +29,10 @@ class App : Application() {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
+    }
+
+    companion object {
+        lateinit var instance: App
+            private set
     }
 }

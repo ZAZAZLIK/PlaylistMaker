@@ -29,15 +29,18 @@
         android:paddingBottom="16dp"
         android:gravity="start|center_vertical" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
         android:id="@+id/btnNewPlaylist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/new_playlist"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/the_color_of_the_refresh_button"
-        android:textColor="@color/white" />
+        android:paddingVertical="12dp"
+        android:background="@drawable/button_new_playlist_bg"
+        android:textColor="@color/button_text_color"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/playlistsRecyclerView"

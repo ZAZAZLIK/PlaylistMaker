@@ -32,7 +32,16 @@
     <fragment
         android:id="@+id/playlistFragment"
         android:name="com.practicum.playlistmaker.playlists.presentation.PlaylistFragment"
-        android:label="@string/playlist_title">
+        android:label="">
+        <argument
+            android:name="playlist_id"
+            app:argType="long" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editPlaylistFragment"
+        android:name="com.practicum.playlistmaker.playlists.presentation.EditPlaylistFragment"
+        android:label="@string/edit_playlist">
         <argument
             android:name="playlist_id"
             app:argType="long" />
@@ -49,6 +58,10 @@
     <action
         android:id="@+id/action_mediaLibraryFragment_to_playlistFragment"
         app:destination="@id/playlistFragment" />
+
+    <action
+        android:id="@+id/action_playlistFragment_to_editPlaylistFragment"
+        app:destination="@id/editPlaylistFragment" />
 
 </navigation>
 

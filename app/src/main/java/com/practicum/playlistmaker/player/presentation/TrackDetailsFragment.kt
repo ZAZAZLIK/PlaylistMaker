@@ -76,13 +76,13 @@ class TrackDetailsFragment : Fragment() {
         artistNameTextView.text = track.artistName
         trackTimeTextView.text = formatTrackTime(track.trackTimeMillis)
         collectionNameTextView.text = track.collectionName
-        releaseDateTextView.text = track.releaseDate
+        releaseDateTextView.text = track.getFormattedYear()
         primaryGenreNameTextView.text = track.primaryGenreName
         countryTextView.text = track.country
 
         Glide.with(view)
             .load(artworkUrl)
-            .apply(RequestOptions().placeholder(R.drawable.placeholder_ma).centerCrop())
+            .apply(RequestOptions().placeholder(R.drawable.track_cover_placeholder).centerCrop())
             .into(artworkImageView)
 
         playButton.setOnClickListener {
@@ -131,6 +131,10 @@ class TrackDetailsFragment : Fragment() {
         
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
+            // Устанавливаем высоту на 2/3 экрана
+            val displayMetrics = resources.displayMetrics
+            val screenHeight = displayMetrics.heightPixels
+            peekHeight = (screenHeight * 2 / 3)
         }
         
         bottomSheetBehavior?.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
