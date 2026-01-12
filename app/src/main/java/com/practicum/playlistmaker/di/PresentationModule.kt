@@ -6,6 +6,9 @@ import com.practicum.playlistmaker.main.viewmodel.MediaLibraryViewModel
 import com.practicum.playlistmaker.main.viewmodel.PlaylistsViewModel
 import com.practicum.playlistmaker.main.viewmodel.SearchViewModel
 import com.practicum.playlistmaker.player.presentation.TrackDetailsViewModel
+import com.practicum.playlistmaker.playlists.presentation.CreatePlaylistViewModel
+import com.practicum.playlistmaker.playlists.presentation.EditPlaylistViewModel
+import com.practicum.playlistmaker.playlists.presentation.PlaylistViewModel
 import com.practicum.playlistmaker.settings.presentation.SettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -14,10 +17,13 @@ val presentationModule = module {
     
     factory { android.media.MediaPlayer() }
     viewModel { MainViewModel(get()) }
-    viewModel { SearchViewModel(get(), get(), get()) }
+    viewModel { SearchViewModel(get(), get()) }
     viewModel { MediaLibraryViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
-    viewModel { PlaylistsViewModel() }
+    viewModel { PlaylistsViewModel(get()) }
     viewModel { FavoritesViewModel(get()) }
-    viewModel { TrackDetailsViewModel(get(), get()) }
+    viewModel { TrackDetailsViewModel(get(), get(), get()) }
+    viewModel { CreatePlaylistViewModel(get()) }
+    viewModel { PlaylistViewModel(get()) }
+    viewModel { EditPlaylistViewModel(get()) }
 }

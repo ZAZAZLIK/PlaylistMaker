@@ -12,6 +12,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
 
         startKoin {
             androidContext(this@App)
@@ -26,5 +27,10 @@ class App : Application() {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
+    }
+
+    companion object {
+        lateinit var instance: App
+            private set
     }
 }

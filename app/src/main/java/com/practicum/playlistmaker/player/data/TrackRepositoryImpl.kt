@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.player.data
 
-import com.practicum.playlistmaker.favorites.data.db.FavoritesDao
 import com.practicum.playlistmaker.player.domain.api.TrackRepository
 import com.practicum.playlistmaker.player.domain.models.Track
 import com.practicum.playlistmaker.search.data.dto.TrackDto
@@ -11,16 +10,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class TrackRepositoryImpl(
-    private val iTunesApi: ITunesApi,
-    private val favoritesDao: FavoritesDao
+    private val iTunesApi: ITunesApi
 ) : TrackRepository {
 
     override fun searchTracks(query: String): Flow<Result<List<Track>>> = flow {
         try {
             val response = iTunesApi.search(query)
-            val favoriteIds = favoritesDao.getFavoriteTrackIds().toSet()
             val tracks = if (response.resultCount > 0) {
-                response.results.map { it.toDomainTrack(favoriteIds) }
+                response.results.map { it.toDomainTrack() }
             } else {
                 emptyList()
             }
@@ -34,7 +31,7 @@ class TrackRepositoryImpl(
         emit(Result.success(emptyList<Track>()))
     }.flowOn(Dispatchers.IO)
 
-    private fun TrackDto.toDomainTrack(favoriteIds: Set<Long>): Track {
+    private fun TrackDto.toDomainTrack(): Track {
         return Track(
             trackId = trackId,
             trackName = trackName,
@@ -45,8 +42,7 @@ class TrackRepositoryImpl(
             releaseDate = releaseDate.orEmpty(),
             primaryGenreName = primaryGenreName.orEmpty(),
             country = country.orEmpty(),
-            previewUrl = previewUrl.orEmpty(),
-            isFavorite = favoriteIds.contains(trackId)
+            previewUrl = previewUrl.orEmpty()
         )
     }
 }
